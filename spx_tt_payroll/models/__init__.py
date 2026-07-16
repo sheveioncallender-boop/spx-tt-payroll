@@ -1,0 +1,7 @@
+from . import pay_frequency
+from . import payroll_group
+from . import pay_item
+from . import employee_pay_item
+from . import hr_employee
+from . import res_company
+from . import res_config_settings
