@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tt_payroll_time_off_snapshot_list" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.time.off.snapshot.list</field>
+        <field name="model">spx.tt.payroll.time.off.snapshot</field>
+        <field name="arch" type="xml">
+            <list string="Payroll Time Off Snapshot" create="0" edit="0" delete="0"
+                  decoration-success="approval_state == 'approved' and payroll_treatment == 'paid'"
+                  decoration-warning="approval_state == 'pending'"
+                  decoration-danger="payroll_treatment == 'unpaid' or attendance_overlap_hours &gt; 0">
+                <field name="employee_id" optional="hide"/>
+                <field name="leave_type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="approval_state" widget="badge"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-warning="approval_state == 'pending'"/>
+                <field name="payroll_treatment" widget="badge"
+                       decoration-success="payroll_treatment == 'paid'"
+                       decoration-danger="payroll_treatment == 'unpaid'"
+                       decoration-warning="payroll_treatment == 'pending'"/>
+                <field name="scheduled_hours" sum="Scheduled Hours"/>
+                <field name="attendance_overlap_hours" sum="Conflict Hours" optional="show"/>
+                <field name="payroll_hours" sum="Payroll Hours"/>
+                <field name="note" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tt_payroll_time_off_snapshot_form" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.time.off.snapshot.form</field>
+        <field name="model">spx.tt.payroll.time.off.snapshot</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Time Off Snapshot" create="0" edit="0" delete="0">
+                <sheet>
+                    <group>
+                        <group string="Odoo Time Off">
+                            <field name="employee_id"/>
+                            <field name="leave_id" groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                            <field name="leave_type_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="Payroll Treatment">
+                            <field name="approval_state" widget="badge"/>
+                            <field name="payroll_treatment" widget="badge"/>
+                            <field name="scheduled_hours"/>
+                            <field name="attendance_overlap_hours"/>
+                            <field name="payroll_hours"/>
+                        </group>
+                    </group>
+                    <group string="Explanation">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tt_payroll_time_off" model="ir.actions.act_window">
+        <field name="name">Time Off</field>
+        <field name="res_model">hr.leave</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="domain">[('state', 'in', ['confirm', 'validate1', 'validate'])]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No Time Off requests found</p>
+            <p>Vacation, sick leave, unpaid leave, and other requests are managed in Odoo Time Off and pulled into payroll automatically.</p>
+        </field>
+    </record>
+</odoo>
