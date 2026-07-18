@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tt_payroll_readiness_form" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.checklist.form</field>
+        <field name="model">spx.tt.payroll.readiness</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Checklist" create="0" edit="0" delete="0">
+                <sheet>
+                    <field name="name" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_all" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="employee_total" widget="statinfo" string="Employees"/>
+                        </button>
+                        <button name="action_open_ready" type="object" class="oe_stat_button" icon="fa-check-circle">
+                            <field name="ready_count" widget="statinfo" string="Complete"/>
+                        </button>
+                        <button name="action_open_incomplete" type="object" class="oe_stat_button" icon="fa-exclamation-circle">
+                            <field name="incomplete_count" widget="statinfo" string="Needs Attention"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>Payroll Checklist</h1>
+                        <p class="text-muted">Review the employee information needed before payroll can be processed.</p>
+                    </div>
+                    <field name="company_id" groups="base.group_multi_company"/>
+
+                    <div class="alert alert-info mb-4" role="alert">
+                        Select an item below to open only the employees who need that information completed.
+                    </div>
+
+                    <separator string="Employee Information to Complete"/>
+                    <div class="row g-3 mt-1">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="border rounded p-3 h-100 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-1"><i class="fa fa-money me-2"/>Pay Details</h4>
+                                    <div class="text-muted mb-2">Pay basis or salary/rate is missing.</div>
+                                    <button name="action_open_missing_pay" type="object" class="btn btn-link p-0" string="Review Employees"/>
+                                </div>
+                                <field name="missing_pay_count" nolabel="1" class="fs-2 fw-bold oe_inline"/>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-12">
+                            <div class="border rounded p-3 h-100 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-1"><i class="fa fa-calendar me-2"/>Pay Frequency</h4>
+                                    <div class="text-muted mb-2">Weekly, fortnightly, semi-monthly or monthly frequency is missing.</div>
+                                    <button name="action_open_missing_frequency" type="object" class="btn btn-link p-0" string="Review Employees"/>
+                                </div>
+                                <field name="missing_frequency_count" nolabel="1" class="fs-2 fw-bold oe_inline"/>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-12">
+                            <div class="border rounded p-3 h-100 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-1"><i class="fa fa-clock-o me-2"/>Work Schedule</h4>
+                                    <div class="text-muted mb-2">A work schedule is needed to compare expected and actual hours.</div>
+                                    <button name="action_open_missing_schedule" type="object" class="btn btn-link p-0" string="Review Employees"/>
+                                </div>
+                                <field name="missing_schedule_count" nolabel="1" class="fs-2 fw-bold oe_inline"/>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-12">
+                            <div class="border rounded p-3 h-100 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-1"><i class="fa fa-id-card-o me-2"/>BIR Number</h4>
+                                    <div class="text-muted mb-2">The employee's BIR number has not been entered.</div>
+                                    <button name="action_open_missing_bir" type="object" class="btn btn-link p-0" string="Review Employees"/>
+                                </div>
+                                <field name="missing_bir_count" nolabel="1" class="fs-2 fw-bold oe_inline"/>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-12">
+                            <div class="border rounded p-3 h-100 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-1"><i class="fa fa-shield me-2"/>NIS Information</h4>
+                                    <div class="text-muted mb-2">An NIS number or an exemption is required.</div>
+                                    <button name="action_open_missing_nis" type="object" class="btn btn-link p-0" string="Review Employees"/>
+                                </div>
+                                <field name="missing_nis_count" nolabel="1" class="fs-2 fw-bold oe_inline"/>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-12">
+                            <div class="border rounded p-3 h-100 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-1"><i class="fa fa-university me-2"/>Bank Information</h4>
+                                    <div class="text-muted mb-2">Bank details are missing for employees paid by transfer.</div>
+                                    <button name="action_open_missing_bank" type="object" class="btn btn-link p-0" string="Review Employees"/>
+                                </div>
+                                <field name="missing_bank_count" nolabel="1" class="fs-2 fw-bold oe_inline"/>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_refresh" type="object" string="Refresh Checklist" class="btn-primary" icon="fa-refresh"/>
+                    <button name="action_open_incomplete" type="object" string="Review All Employees" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tt_payroll_readiness_window" model="ir.actions.act_window">
+        <field name="name">Payroll Checklist</field>
+        <field name="res_model">spx.tt.payroll.readiness</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_tt_payroll_readiness_form"/>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_tt_payroll_readiness" model="ir.actions.server">
+        <field name="name">Open Payroll Checklist</field>
+        <field name="model_id" ref="model_spx_tt_payroll_readiness"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_readiness()</field>
+    </record>
+</odoo>
