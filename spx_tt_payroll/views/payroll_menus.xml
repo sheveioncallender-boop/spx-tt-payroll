@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_tt_payroll_root"
+              name="Trinidad Payroll"
+              action="action_tt_payroll_dashboard_server"
+              sequence="38"
+              web_icon="spx_tt_payroll,static/description/icon.png"
+              groups="spx_tt_payroll.group_tt_payroll_user"/>
+
+    <record id="menu_tt_payroll_readiness" model="ir.ui.menu">
+        <field name="name">Employee Setup</field>
+        <field name="parent_id" ref="menu_tt_payroll_root"/>
+        <field name="sequence">95</field>
+        <field name="active">False</field>
+    </record>
+
+
+    <menuitem id="menu_tt_payroll_dashboard"
+              name="Dashboard"
+              parent="menu_tt_payroll_root"
+              action="action_tt_payroll_dashboard_server"
+              sequence="1"
+              groups="spx_tt_payroll.group_tt_payroll_user"/>
+
+    <menuitem id="menu_tt_payroll_employees"
+              name="Employees"
+              parent="menu_tt_payroll_root"
+              action="action_tt_payroll_employees"
+              sequence="10"/>
+
+
+    <menuitem id="menu_tt_payroll_runs"
+              name="Payroll Runs"
+              parent="menu_tt_payroll_root"
+              action="action_tt_payroll_runs"
+              sequence="20"
+              groups="spx_tt_payroll.group_tt_payroll_user"/>
+
+    <menuitem id="menu_tt_payroll_attendances"
+              name="Attendances"
+              parent="menu_tt_payroll_root"
+              action="hr_attendance.hr_attendance_action"
+              sequence="30"
+              groups="spx_tt_payroll.group_tt_payroll_officer"/>
+
+    <menuitem id="menu_tt_payroll_time_off"
+              name="Time Off"
+              parent="menu_tt_payroll_root"
+              action="action_tt_payroll_time_off"
+              sequence="40"
+              groups="spx_tt_payroll.group_tt_payroll_officer"/>
+
+    <menuitem id="menu_tt_payroll_configuration"
+              name="Configuration"
+              parent="menu_tt_payroll_root"
+              sequence="90"
+              groups="spx_tt_payroll.group_tt_payroll_manager"/>
+
+    <menuitem id="menu_tt_payroll_groups"
+              name="Payroll Groups"
+              parent="menu_tt_payroll_configuration"
+              action="action_tt_payroll_groups"
+              sequence="10"/>
+
+    <menuitem id="menu_tt_payroll_items"
+              name="Earnings and Deductions"
+              parent="menu_tt_payroll_configuration"
+              action="action_tt_pay_items"
+              sequence="20"/>
+
+    <menuitem id="menu_tt_payroll_settings"
+              name="Settings"
+              parent="menu_tt_payroll_configuration"
+              action="action_tt_payroll_settings"
+              sequence="90"/>
+</odoo>
