@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tt_payroll_attention_wizard_form" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.attention.wizard.form</field>
+        <field name="model">spx.tt.payroll.attention.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Items Needing Attention" class="o_tt_payroll_attention_wizard">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        Review each item below. Select the action beside an item to go directly to the place where it can be resolved.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="payroll_run_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="issue_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="run_employee_id" invisible="1"/>
+                    <field name="issue_line_ids" nolabel="1" readonly="1">
+                        <list create="0" edit="0" delete="0">
+                            <field name="sequence" column_invisible="True"/>
+                            <field name="title" string="Item Needing Attention"/>
+                            <field name="detail" string="Recommended Action"/>
+                            <field name="action_label" string="Action"/>
+                            <button name="action_resolve" type="object" string="Go" class="btn-primary" icon="fa-arrow-right"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button string="Close" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
