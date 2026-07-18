@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_tt_payroll_payslip">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="payload" t-value="doc._get_payslip_report_values()"/>
+                <t t-set="currency_symbol" t-value="doc.currency_id.symbol or 'TT$'"/>
+                <div class="page tt-payslip-page">
+                    <style>
+                        .tt-payslip-page { font-family: Arial, Helvetica, sans-serif; color: #172033; font-size: 11px; line-height: 1.35; padding: 0; position: relative; }
+                        .tt-payslip-page * { box-sizing: border-box; }
+                        .tt-payslip-header { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+                        .tt-payslip-header td { vertical-align: top; }
+                        .tt-brand-logo { width: 58px; height: 58px; object-fit: contain; margin-right: 12px; }
+                        .tt-company-name { font-size: 21px; font-weight: 700; color: #111827; margin: 0 0 5px; }
+                        .tt-employee-name { font-size: 15px; font-weight: 700; color: #28334f; margin: 0 0 4px; }
+                        .tt-muted { color: #667085; }
+                        .tt-meta { text-align: right; }
+                        .tt-meta-row { margin-bottom: 4px; white-space: nowrap; }
+                        .tt-meta-label { color: #667085; font-weight: 600; margin-right: 5px; }
+                        .tt-meta-value { color: #172033; font-weight: 700; }
+                        .tt-top-accent { height: 5px; background: #5b57d1; border-radius: 10px 10px 0 0; margin-bottom: 13px; }
+                        .tt-two-column { width: 100%; border-collapse: separate; border-spacing: 10px 0; margin: 0 -10px 12px; }
+                        .tt-two-column &gt; tbody &gt; tr &gt; td { width: 50%; vertical-align: top; padding: 0 10px; }
+                        .tt-section { border: 1px solid #e2e7f0; border-radius: 9px; overflow: hidden; min-height: 145px; }
+                        .tt-section-heading { padding: 8px 12px; font-size: 11px; font-weight: 800; letter-spacing: .35px; text-transform: uppercase; color: #fff; }
+                        .tt-heading-wages { background: #41a36f; }
+                        .tt-heading-bank { background: #5b67d9; }
+                        .tt-heading-additions { background: #41a36f; }
+                        .tt-heading-tax { background: #e56b69; }
+                        .tt-heading-deduction { background: #d95f68; }
+                        .tt-heading-loan { background: #c85a74; }
+                        .tt-heading-summary { background: #4b4bbd; }
+                        .tt-table { width: 100%; border-collapse: collapse; }
+                        .tt-table th { background: #f7f8fb; color: #475467; font-size: 9.5px; font-weight: 700; padding: 7px 9px; border-bottom: 1px solid #e2e7f0; }
+                        .tt-table td { padding: 7px 9px; border-bottom: 1px solid #edf0f5; vertical-align: top; }
+                        .tt-table tr:last-child td { border-bottom: none; }
+                        .tt-text-right { text-align: right; }
+                        .tt-total-row { font-weight: 800; color: #172033; background: #fbfcfe; }
+                        .tt-empty { padding: 15px 10px; color: #98a2b3; font-style: italic; }
+                        .tt-four-column { width: 100%; border-collapse: separate; border-spacing: 8px 0; margin: 0 -8px 12px; table-layout: fixed; }
+                        .tt-four-column &gt; tbody &gt; tr &gt; td { width: 25%; vertical-align: top; padding: 0 8px; }
+                        .tt-mini-section { border: 1px solid #e2e7f0; border-radius: 9px; overflow: hidden; min-height: 155px; }
+                        .tt-mini-table { width: 100%; border-collapse: collapse; }
+                        .tt-mini-table th { padding: 6px 8px; background: #f7f8fb; color: #475467; font-size: 9px; border-bottom: 1px solid #e2e7f0; }
+                        .tt-mini-table td { padding: 6px 8px; font-size: 9.5px; border-bottom: 1px solid #edf0f5; vertical-align: top; }
+                        .tt-mini-table tr:last-child td { border-bottom: none; }
+                        .tt-reference { display: block; color: #7a8499; font-size: 8.5px; margin-top: 2px; }
+                        .tt-summary-wrap { border: 1px solid #d8def0; border-radius: 9px; overflow: hidden; }
+                        .tt-summary-table { width: 100%; border-collapse: collapse; }
+                        .tt-summary-table th { padding: 7px 6px; background: #f5f6fd; color: #364152; font-size: 9.5px; font-weight: 800; border-right: 1px solid #dfe4ef; border-bottom: 1px solid #d8def0; text-align: right; }
+                        .tt-summary-table th:first-child { text-align: left; }
+                        .tt-summary-table td { padding: 7px 6px; border-right: 1px solid #e5e9f2; border-bottom: 1px solid #e5e9f2; text-align: right; }
+                        .tt-summary-table td:first-child { text-align: left; font-weight: 800; }
+                        .tt-summary-table tr:last-child td { border-bottom: none; }
+                        .tt-summary-table th:last-child, .tt-summary-table td:last-child { border-right: none; }
+                        .tt-net-cell { font-weight: 900; color: #3535a7; background: #f1f1ff; }
+                        .tt-footer { width: 100%; margin-top: 8px; border-collapse: collapse; color: #7a8499; font-size: 8.5px; }
+                        .tt-footer td:last-child { text-align: right; }
+                        .tt-draft-watermark { position: absolute; top: 45%; left: 28%; width: 44%; text-align: center; transform: rotate(-24deg); font-size: 72px; font-weight: 900; letter-spacing: 8px; color: rgba(91, 87, 209, .10); z-index: 0; }
+                        .tt-content-layer { position: relative; z-index: 1; }
+                        .tt-status-pill { display: inline-block; padding: 3px 8px; border-radius: 999px; background: #eef0ff; color: #4b4bbd; font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .3px; }
+                    </style>
+
+                    <div t-if="payload['is_draft']" class="tt-draft-watermark">DRAFT</div>
+                    <div class="tt-content-layer">
+                        <div class="tt-top-accent"/>
+                        <table class="tt-payslip-header">
+                            <tr>
+                                <td style="width: 58%;">
+                                    <table style="border-collapse: collapse;">
+                                        <tr>
+                                            <td t-if="doc.company_id.logo" style="vertical-align: top;">
+                                                <img t-att-src="image_data_uri(doc.company_id.logo)" class="tt-brand-logo"/>
+                                            </td>
+                                            <td style="vertical-align: top;">
+                                                <div class="tt-company-name" t-field="doc.company_id.name"/>
+                                                <div class="tt-employee-name">
+                                                    <span t-if="doc.employee_number" t-esc="doc.employee_number"/>
+                                                    <span t-if="doc.employee_number"> · </span>
+                                                    <span t-field="doc.employee_id.name"/>
+                                                </div>
+                                                <div class="tt-muted" t-if="doc.job_title" t-esc="doc.job_title"/>
+                                                <div class="tt-muted" t-if="doc.department_id" t-field="doc.department_id.name"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td class="tt-meta" style="width: 42%;">
+                                    <div class="tt-meta-row"><span class="tt-status-pill" t-esc="payload['status_label']"/></div>
+                                    <div class="tt-meta-row"><span class="tt-meta-label">Run:</span><span class="tt-meta-value" t-field="doc.run_id.name"/></div>
+                                    <div class="tt-meta-row"><span class="tt-meta-label">Pay Date:</span><span class="tt-meta-value" t-field="doc.run_id.payment_date"/></div>
+                                    <div class="tt-meta-row"><span class="tt-meta-label">Pay Period:</span><span class="tt-meta-value" t-field="doc.run_id.date_start"/> – <span class="tt-meta-value" t-field="doc.run_id.date_end"/></div>
+                                    <div class="tt-meta-row"><span class="tt-meta-label">BIR #:</span><span class="tt-meta-value" t-esc="doc.bir_number or '—'"/></div>
+                                    <div class="tt-meta-row"><span class="tt-meta-label">NIS #:</span><span class="tt-meta-value" t-esc="doc.nis_number or '—'"/></div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="tt-two-column">
+                            <tr>
+                                <td>
+                                    <div class="tt-section">
+                                        <div class="tt-section-heading tt-heading-wages">Hours <span style="float:right;" t-esc="doc.pay_frequency_id.name or ''"/></div>
+                                        <table class="tt-table">
+                                            <thead>
+                                                <tr><th style="text-align:left;">Wage</th><th class="tt-text-right">Rate</th><th class="tt-text-right">Amount</th><th class="tt-text-right">Total</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="payload['wages']" t-as="item">
+                                                    <td><span t-esc="(item.description or item.pay_item_id.name or '').upper()"/></td>
+                                                    <td class="tt-text-right">
+                                                        <t t-if="doc.pay_basis == 'hourly' or item.source != 'salary'"><span t-esc="currency_symbol"/> <span t-esc="'{:,.2f}'.format(item.rate)"/></t>
+                                                    </td>
+                                                    <td class="tt-text-right">
+                                                        <t t-if="doc.pay_basis == 'hourly' or item.source != 'salary'"><span t-esc="'{:,.2f}'.format(item.quantity)"/></t>
+                                                    </td>
+                                                    <td class="tt-text-right"><strong><span t-esc="'{:,.2f}'.format(item.amount)"/></strong></td>
+                                                </tr>
+                                                <tr t-if="not payload['wages']"><td colspan="4" class="tt-empty">No wage lines</td></tr>
+                                                <tr class="tt-total-row"><td colspan="3">Total Wages</td><td class="tt-text-right"><span t-esc="'{:,.2f}'.format(payload['wage_total'])"/></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tt-section">
+                                        <div class="tt-section-heading tt-heading-bank">Bank Transfers</div>
+                                        <table class="tt-table">
+                                            <thead><tr><th style="text-align:left;">Bank Name</th><th style="text-align:left;">Account</th><th class="tt-text-right">Paid</th></tr></thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td t-esc="doc.bank_name or payload['payment_label']"/>
+                                                    <td t-esc="payload['masked_account'] or '—'"/>
+                                                    <td class="tt-text-right"><span t-esc="'{:,.2f}'.format(doc.net_pay)"/></td>
+                                                </tr>
+                                                <tr class="tt-total-row"><td colspan="2" t-esc="payload['payment_label']"/><td class="tt-text-right"><span t-esc="'{:,.2f}'.format(doc.net_pay)"/></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="tt-four-column">
+                            <tr>
+                                <td>
+                                    <div class="tt-mini-section">
+                                        <div class="tt-section-heading tt-heading-additions">Additions</div>
+                                        <table class="tt-mini-table">
+                                            <thead><tr><th style="text-align:left;">Description</th><th class="tt-text-right">Amount</th></tr></thead>
+                                            <tbody>
+                                                <tr t-foreach="payload['additions']" t-as="item"><td t-esc="item.description"/><td class="tt-text-right" t-esc="'{:,.2f}'.format(item.amount)"/></tr>
+                                                <tr t-if="not payload['additions']"><td colspan="2" class="tt-empty">No additions</td></tr>
+                                                <tr class="tt-total-row"><td>Total</td><td class="tt-text-right" t-esc="'{:,.2f}'.format(payload['addition_total'])"/></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tt-mini-section">
+                                        <div class="tt-section-heading tt-heading-tax">Taxes</div>
+                                        <table class="tt-mini-table">
+                                            <thead><tr><th style="text-align:left;">Description</th><th class="tt-text-right">Amount</th></tr></thead>
+                                            <tbody>
+                                                <tr t-foreach="payload['taxes']" t-as="item"><td t-esc="item.description"/><td class="tt-text-right" t-esc="'{:,.2f}'.format(item.amount)"/></tr>
+                                                <tr t-if="not payload['taxes']"><td colspan="2" class="tt-empty">No taxes</td></tr>
+                                                <tr class="tt-total-row"><td>Total</td><td class="tt-text-right" t-esc="'{:,.2f}'.format(payload['tax_total'])"/></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tt-mini-section">
+                                        <div class="tt-section-heading tt-heading-deduction">Deductions</div>
+                                        <table class="tt-mini-table">
+                                            <thead><tr><th style="text-align:left;">Description</th><th class="tt-text-right">Amount</th></tr></thead>
+                                            <tbody>
+                                                <tr t-foreach="payload['deductions']" t-as="item">
+                                                    <td><span t-esc="item.description"/><span t-if="item.reference" class="tt-reference" t-esc="item.reference"/></td>
+                                                    <td class="tt-text-right" t-esc="'{:,.2f}'.format(item.amount)"/>
+                                                </tr>
+                                                <tr t-if="not payload['deductions']"><td colspan="2" class="tt-empty">No deductions</td></tr>
+                                                <tr class="tt-total-row"><td>Total</td><td class="tt-text-right" t-esc="'{:,.2f}'.format(payload['deduction_total'])"/></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tt-mini-section">
+                                        <div class="tt-section-heading tt-heading-loan">Loans</div>
+                                        <table class="tt-mini-table">
+                                            <thead><tr><th style="text-align:left;">Description</th><th class="tt-text-right">Payment</th><th class="tt-text-right">Balance</th></tr></thead>
+                                            <tbody>
+                                                <tr t-foreach="payload['loans']" t-as="item">
+                                                    <td><span t-esc="item.description"/><span t-if="item.reference" class="tt-reference" t-esc="item.reference"/></td>
+                                                    <td class="tt-text-right" t-esc="'{:,.2f}'.format(item.amount)"/>
+                                                    <td class="tt-text-right" t-esc="'{:,.2f}'.format(item.remaining_balance)"/>
+                                                </tr>
+                                                <tr t-if="not payload['loans']"><td colspan="3" class="tt-empty">No loans</td></tr>
+                                                <tr class="tt-total-row"><td>Total</td><td class="tt-text-right" t-esc="'{:,.2f}'.format(payload['loan_total'])"/><td class="tt-text-right">—</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="tt-summary-wrap">
+                            <div class="tt-section-heading tt-heading-summary">Summary</div>
+                            <table class="tt-summary-table">
+                                <thead>
+                                    <tr><th>Period</th><th>Income</th><th>Additions</th><th>Gross</th><th>PAYE</th><th>HSUR</th><th>NIS</th><th>Deductions</th><th>Loans</th><th>Net</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Current</td>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['current']['income'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['current']['additions'])"/>
+                                        <td><strong t-esc="'{:,.2f}'.format(payload['summary']['current']['gross'])"/></td>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['current']['paye'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['current']['hsur'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['current']['nis'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['current']['deductions'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['current']['loans'])"/>
+                                        <td class="tt-net-cell" t-esc="'{:,.2f}'.format(payload['summary']['current']['net'])"/>
+                                    </tr>
+                                    <tr>
+                                        <td>YTD</td>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['ytd']['income'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['ytd']['additions'])"/>
+                                        <td><strong t-esc="'{:,.2f}'.format(payload['summary']['ytd']['gross'])"/></td>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['ytd']['paye'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['ytd']['hsur'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['ytd']['nis'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['ytd']['deductions'])"/>
+                                        <td t-esc="'{:,.2f}'.format(payload['summary']['ytd']['loans'])"/>
+                                        <td class="tt-net-cell" t-esc="'{:,.2f}'.format(payload['summary']['ytd']['net'])"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <table class="tt-footer">
+                            <tr>
+                                <td>Generated by Trinidad &amp; Tobago Payroll for Odoo · Values are based on payroll run <span t-field="doc.run_id.name"/>.</td>
+                                <td><span t-if="payload['is_draft']">Draft preview · </span>Generated <span t-esc="time.strftime('%d %b %Y %I:%M %p')"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
