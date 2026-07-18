@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tt_payroll_run_list" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.run.list</field>
+        <field name="model">spx.tt.payroll.run</field>
+        <field name="arch" type="xml">
+            <list string="Payroll Runs"
+                  decoration-info="state == 'attendance_review'"
+                  decoration-warning="state in ['calculated', 'under_review']"
+                  decoration-success="state in ['approved', 'paid']"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="pay_frequency_id"/>
+                <field name="payroll_group_id" optional="show"/>
+                <field name="department_id" optional="hide"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="payment_date"/>
+                <field name="employee_count"/>
+                <field name="needs_attention_count" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="gross_pay" widget="monetary" sum="Gross Pay" optional="show"/>
+                <field name="total_deductions" widget="monetary" sum="Deductions" optional="show"/>
+                <field name="net_pay" widget="monetary" sum="Net Pay"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'attendance_review'"
+                       decoration-warning="state in ['calculated', 'under_review']"
+                       decoration-success="state in ['approved', 'paid']"
+                       decoration-muted="state in ['draft', 'cancelled']"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tt_payroll_run_search" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.run.search</field>
+        <field name="model">spx.tt.payroll.run</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="pay_frequency_id"/>
+                <field name="payroll_group_id"/>
+                <field name="department_id"/>
+                <field name="payment_date"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="in_progress" string="In Progress" domain="[('state', 'in', ['attendance_review', 'calculated', 'under_review'])]"/>
+                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                <filter name="paid" string="Paid" domain="[('state', '=', 'paid')]"/>
+                <group>
+                    <filter name="group_frequency" string="Pay Frequency" context="{'group_by': 'pay_frequency_id'}"/>
+                    <filter name="group_year" string="Payroll Year" context="{'group_by': 'payroll_year'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_company" string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_tt_payroll_run_form" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.run.form</field>
+        <field name="model">spx.tt.payroll.run</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Run" class="o_tt_payroll_run_form">
+                <header>
+                    <button name="action_load_employees" type="object" string="Generate Payroll"
+                            class="btn-primary" invisible="state not in ['draft', 'attendance_review']"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_refresh_attendance" type="object" string="Refresh All Attendance"
+                            invisible="state not in ['attendance_review', 'calculated'] or not employee_count"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_clear_employees" type="object" string="Clear Employees"
+                            invisible="state not in ['draft', 'attendance_review'] or not employee_count"
+                            confirm="Remove all employees and their current calculations from this draft payroll?"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_calculate" type="object" string="Calculate"
+                            class="btn-primary" invisible="state not in ['draft', 'attendance_review', 'calculated']"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_submit_for_review" type="object" string="Submit for Review"
+                            class="btn-primary" invisible="state != 'calculated'"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-primary" invisible="state not in ['calculated', 'under_review']"
+                            groups="spx_tt_payroll.group_tt_payroll_manager"/>
+                    <button name="action_mark_paid" type="object" string="Mark Paid"
+                            class="btn-primary" invisible="state != 'approved'"
+                            groups="spx_tt_payroll.group_tt_payroll_manager"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                            invisible="state not in ['attendance_review', 'calculated', 'under_review', 'approved', 'cancelled']"
+                            confirm="Return this payroll run to Draft?"
+                            groups="spx_tt_payroll.group_tt_payroll_manager"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ['paid', 'cancelled']"
+                            confirm="Cancel this payroll run?"
+                            groups="spx_tt_payroll.group_tt_payroll_manager"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,attendance_review,calculated,under_review,approved,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_employee_lines" type="object" class="oe_stat_button" icon="fa-users"
+                                invisible="not employee_count">
+                            <field name="employee_count" widget="statinfo" string="Employee Calculations"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+
+                    <group>
+                        <group string="Pay Period">
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                            <field name="pay_frequency_id" readonly="state != 'draft'"/>
+                            <field name="payroll_group_id" readonly="state != 'draft'"/>
+                            <field name="department_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Dates">
+                            <field name="date_start" readonly="state != 'draft'"/>
+                            <field name="date_end" readonly="state != 'draft'"/>
+                            <field name="payment_date" readonly="state in ['approved', 'paid', 'cancelled']"/>
+                            <field name="payroll_year" readonly="1"/>
+                        </group>
+                        <group string="Period Information">
+                            <field name="period_day_count" readonly="1"/>
+                            <field name="monday_count" readonly="1"/>
+                            <field name="period_week_count" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <field name="currency_id" invisible="1"/>
+                    <div class="o_tt_payroll_summary_grid o_tt_payroll_run_summary">
+                        <div class="o_tt_payroll_summary_card">
+                            <span class="o_tt_payroll_caption">Employees</span>
+                            <div class="o_tt_payroll_summary_value"><field name="employee_count"/></div>
+                            <small><field name="payable_employee_count"/> payable</small>
+                        </div>
+                        <div class="o_tt_payroll_summary_card">
+                            <span class="o_tt_payroll_caption">Needs Attention</span>
+                            <div class="o_tt_payroll_summary_value"><field name="needs_attention_count"/></div>
+                            <small><field name="reviewed_count"/> reviewed · <field name="held_count"/> held</small>
+                        </div>
+                        <div class="o_tt_payroll_summary_card">
+                            <span class="o_tt_payroll_caption">Gross Pay</span>
+                            <div class="o_tt_payroll_summary_value"><field name="gross_pay" widget="monetary"/></div>
+                        </div>
+                        <div class="o_tt_payroll_summary_card">
+                            <span class="o_tt_payroll_caption">Total Deductions</span>
+                            <div class="o_tt_payroll_summary_value"><field name="total_deductions" widget="monetary"/></div>
+                        </div>
+                        <div class="o_tt_payroll_summary_card o_tt_payroll_net_card">
+                            <span class="o_tt_payroll_caption">Net Payroll</span>
+                            <div class="o_tt_payroll_summary_value"><field name="net_pay" widget="monetary"/></div>
+                        </div>
+                    </div>
+
+                    <notebook>
+                        <page string="Employees" name="employees">
+                            <field name="employee_line_ids" readonly="state in ['approved', 'paid', 'cancelled']">
+                                <list editable="bottom" delete="false"
+                                      decoration-danger="display_status == 'needs_attention'"
+                                      decoration-success="display_status == 'reviewed'"
+                                      decoration-muted="display_status in ['on_hold', 'excluded']">
+                                    <field name="id" column_invisible="True"/>
+                                    <field name="employee_id" readonly="id"/>
+                                    <field name="employee_number" optional="hide" readonly="1"/>
+                                    <field name="department_id" optional="show" readonly="1"/>
+                                    <field name="pay_basis" optional="show" readonly="1"/>
+                                    <field name="pay_frequency_id" optional="show" readonly="1"/>
+                                    <field name="scheduled_hours" string="Payroll Expected Hours" optional="show" readonly="1"/>
+                                    <field name="actual_worked_hours" string="Clocked Hours" optional="show" readonly="1"/>
+                                    <field name="payable_hours" string="Payable Hours" optional="show" readonly="1"/>
+                                    <field name="attendance_adjustment_hours" string="Approved Hours Adjustment" optional="hide"/>
+                                    <field name="attendance_status" widget="badge" optional="show" readonly="1"
+                                           decoration-success="attendance_status == 'ready'"
+                                           decoration-warning="attendance_status == 'needs_attention'"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="gross_pay" widget="monetary" sum="Gross"/>
+                                    <field name="total_deductions" widget="monetary" sum="Deductions"/>
+                                    <field name="net_pay" widget="monetary" sum="Net"/>
+                                    <field name="issue_count" string="Issues"/>
+                                    <field name="display_status" widget="badge"
+                                           decoration-danger="display_status == 'needs_attention'"
+                                           decoration-info="display_status == 'ready'"
+                                           decoration-success="display_status == 'reviewed'"
+                                           decoration-warning="display_status == 'on_hold'"
+                                           decoration-muted="display_status == 'excluded'"/>
+                                    <button name="action_open_calculation" type="object" string="Review" icon="fa-external-link"/>
+                                    <button name="action_remove_from_run" type="object" string="Remove" icon="fa-times"
+                                            invisible="run_state != 'draft'"
+                                            confirm="Remove this employee and the current calculation from the payroll run?"/>
+                                    <field name="run_state" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Summary" name="summary">
+                            <group>
+                                <group string="Review">
+                                    <field name="employee_count" readonly="1"/>
+                                    <field name="payable_employee_count" readonly="1"/>
+                                    <field name="needs_attention_count" readonly="1"/>
+                                    <field name="reviewed_count" readonly="1"/>
+                                    <field name="held_count" readonly="1"/>
+                                </group>
+                                <group string="Payroll Totals">
+                                    <field name="gross_pay" widget="monetary" readonly="1"/>
+                                    <field name="total_deductions" widget="monetary" readonly="1"/>
+                                    <field name="employer_contributions" widget="monetary" readonly="1"/>
+                                    <field name="net_pay" widget="monetary" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1" placeholder="Internal notes about this payroll run..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_tt_payroll_run_employee_list" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.run.employee.list</field>
+        <field name="model">spx.tt.payroll.run.employee</field>
+        <field name="arch" type="xml">
+            <list string="Employee Payroll Calculations"
+                  decoration-danger="display_status == 'needs_attention'"
+                  decoration-success="display_status == 'reviewed'"
+                  decoration-muted="display_status in ['on_hold', 'excluded']">
+                <field name="run_id"/>
+                <field name="employee_id"/>
+                <field name="employee_number" optional="show"/>
+                <field name="department_id" optional="show"/>
+                <field name="pay_basis"/>
+                <field name="scheduled_hours" string="Payroll Expected Hours" optional="show"/>
+                <field name="actual_worked_hours" string="Clocked Hours" optional="show"/>
+                <field name="payable_hours" string="Payable Hours" optional="show"/>
+                <field name="attendance_adjustment_hours" string="Approved Hours Adjustment" optional="hide"/>
+                <field name="attendance_status" widget="badge" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="gross_pay" widget="monetary" sum="Gross"/>
+                <field name="total_deductions" widget="monetary" sum="Deductions"/>
+                <field name="net_pay" widget="monetary" sum="Net"/>
+                <field name="issue_count" string="Issues"/>
+                <field name="display_status" widget="badge"
+                       decoration-danger="display_status == 'needs_attention'"
+                       decoration-info="display_status == 'ready'"
+                       decoration-success="display_status == 'reviewed'"
+                       decoration-warning="display_status == 'on_hold'"
+                       decoration-muted="display_status == 'excluded'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tt_payroll_run_employee_search" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.run.employee.search</field>
+        <field name="model">spx.tt.payroll.run.employee</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="run_id"/>
+                <field name="department_id"/>
+                <filter name="needs_attention" string="Needs Attention" domain="[('display_status', '=', 'needs_attention')]"/>
+                <filter name="ready" string="Ready" domain="[('display_status', '=', 'ready')]"/>
+                <filter name="reviewed" string="Reviewed" domain="[('display_status', '=', 'reviewed')]"/>
+                <filter name="on_hold" string="On Hold" domain="[('display_status', '=', 'on_hold')]"/>
+                <group>
+                    <filter name="group_run" string="Payroll Run" context="{'group_by': 'run_id'}"/>
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_status" string="Status" context="{'group_by': 'display_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_tt_payroll_run_employee_form" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.run.employee.form</field>
+        <field name="model">spx.tt.payroll.run.employee</field>
+        <field name="arch" type="xml">
+            <form string="Employee Payroll Calculation" class="o_tt_payroll_employee_form o_tt_payroll_calculation_form">
+                <header>
+                    <button name="action_mark_reviewed" type="object" string="Mark Reviewed" class="btn-primary"
+                            invisible="display_status in ['reviewed', 'on_hold', 'excluded'] or run_state in ['approved', 'paid', 'cancelled']"
+                            groups="spx_tt_payroll.group_tt_payroll_reviewer"/>
+                    <button name="action_place_on_hold" type="object" string="Place On Hold"
+                            invisible="review_state == 'on_hold' or run_state in ['approved', 'paid', 'cancelled']"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_include" type="object" string="Include"
+                            invisible="review_state not in ['on_hold', 'excluded'] or run_state in ['approved', 'paid', 'cancelled']"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_exclude" type="object" string="Exclude from Run"
+                            invisible="review_state == 'excluded' or run_state in ['approved', 'paid', 'cancelled']"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_refresh_attendance" type="object" string="Refresh Attendance"
+                            invisible="run_state in ['approved', 'paid', 'cancelled']"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_recalculate_earnings" type="object" string="Recalculate Pay"
+                            invisible="run_state in ['approved', 'paid', 'cancelled']"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_confirm_attendance" type="object" string="Confirm Attendance"
+                            class="btn-primary"
+                            invisible="attendance_confirmed or run_state in ['approved', 'paid', 'cancelled']"
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <button name="action_refresh_from_employee" type="object" string="Refresh Employee Profile"
+                            invisible="run_state in ['approved', 'paid', 'cancelled']"
+                            confirm="Refresh employee pay details, attendance, and automatic payroll items? Manual entries and statutory values will be kept."
+                            groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                    <field name="display_status" widget="statusbar"
+                           statusbar_visible="ready,needs_attention,reviewed,on_hold,excluded"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_run" type="object" class="oe_stat_button" icon="fa-calculator">
+                            <span class="o_stat_text">Payroll Run</span>
+                        </button>
+                        <button name="action_open_employee_profile" type="object" class="oe_stat_button" icon="fa-user">
+                            <span class="o_stat_text">Employee Profile</span>
+                        </button>
+                        <button name="action_open_attendances" type="object" class="oe_stat_button" icon="fa-clock-o"
+                                groups="spx_tt_payroll.group_tt_payroll_officer">
+                            <span class="o_stat_text">Attendances</span>
+                        </button>
+                    </div>
+
+                    <div class="o_tt_payroll_profile_header">
+                        <field name="employee_image" widget="image" class="o_tt_payroll_avatar" options="{'preview_image': 'employee_image'}"/>
+                        <div class="o_tt_payroll_profile_identity">
+                            <h1><field name="employee_id" readonly="1"/></h1>
+                            <div class="o_tt_payroll_profile_line">
+                                <field name="job_title" readonly="1" placeholder="Job Title"/>
+                                <span>·</span>
+                                <field name="department_id" readonly="1" placeholder="Department"/>
+                            </div>
+                            <div class="o_tt_payroll_profile_line text-muted">
+                                <field name="employee_number" readonly="1" placeholder="Employee / Clock ID"/>
+                                <span>·</span>
+                                <field name="run_id" readonly="1"/>
+                            </div>
+                        </div>
+                        <div class="o_tt_payroll_setup_panel">
+                            <span class="o_tt_payroll_caption">Calculation Status</span>
+                            <field name="display_status" widget="badge"
+                                   decoration-danger="display_status == 'needs_attention'"
+                                   decoration-info="display_status == 'ready'"
+                                   decoration-success="display_status == 'reviewed'"
+                                   decoration-warning="display_status == 'on_hold'"
+                                   decoration-muted="display_status == 'excluded'"/>
+                            <div class="mt-2" invisible="not issue_count">
+                                <field name="issue_count"/> item(s) need attention
+                            </div>
+                        </div>
+                    </div>
+
+                    <field name="currency_id" invisible="1"/>
+                    <field name="run_state" invisible="1"/>
+                    <field name="review_state" invisible="1"/>
+                    <div class="o_tt_payroll_summary_grid o_tt_payroll_calculation_summary">
+                        <div class="o_tt_payroll_summary_card">
+                            <span class="o_tt_payroll_caption">Pay Basis</span>
+                            <div class="o_tt_payroll_summary_value"><field name="pay_basis"/></div>
+                            <small><field name="pay_frequency_id"/></small>
+                        </div>
+                        <div class="o_tt_payroll_summary_card">
+                            <span class="o_tt_payroll_caption">Payable Hours</span>
+                            <div class="o_tt_payroll_summary_value"><field name="payable_hours"/></div>
+                            <small><field name="scheduled_hours"/> expected</small>
+                        </div>
+                        <div class="o_tt_payroll_summary_card">
+                            <span class="o_tt_payroll_caption">Gross Pay</span>
+                            <div class="o_tt_payroll_summary_value"><field name="gross_pay" widget="monetary"/></div>
+                        </div>
+                        <div class="o_tt_payroll_summary_card">
+                            <span class="o_tt_payroll_caption">Deductions</span>
+                            <div class="o_tt_payroll_summary_value"><field name="total_deductions" widget="monetary"/></div>
+                        </div>
+                        <div class="o_tt_payroll_summary_card o_tt_payroll_net_card">
+                            <span class="o_tt_payroll_caption">Net Pay</span>
+                            <div class="o_tt_payroll_summary_value"><field name="net_pay" widget="monetary"/></div>
+                        </div>
+                    </div>
+
+                    <notebook>
+                        <page string="Wages" name="wages">
+                            <field name="wage_item_ids" readonly="run_state in ['approved', 'paid', 'cancelled']">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="pay_item_id" domain="[('code', 'in', ['BASIC', 'REGULAR_HOURS', 'OT150', 'OT200', 'PUBLIC_HOLIDAY']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="rate" optional="show"/>
+                                    <field name="quantity" optional="show"/>
+                                    <field name="factor" optional="show"/>
+                                    <field name="manual_amount" optional="show"/>
+                                    <field name="amount" widget="monetary" readonly="1" sum="Total Wages"/>
+                                    <field name="source" optional="hide"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Additions" name="additions">
+                            <field name="addition_item_ids" readonly="run_state in ['approved', 'paid', 'cancelled']">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="pay_item_id" domain="[('category', '=', 'earning'), ('code', 'not in', ['BASIC', 'REGULAR_HOURS', 'OT150', 'OT200', 'PUBLIC_HOLIDAY']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="rate" optional="show"/>
+                                    <field name="quantity" optional="show"/>
+                                    <field name="percentage" optional="hide"/>
+                                    <field name="manual_amount" optional="show"/>
+                                    <field name="amount" widget="monetary" readonly="1" sum="Total Additions"/>
+                                    <field name="exclude_from_paye" string="Exclude from PAYE" optional="show"/>
+                                    <field name="source" optional="hide"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Taxes" name="taxes">
+                            <field name="tax_item_ids" readonly="run_state in ['approved', 'paid', 'cancelled']">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="pay_item_id" domain="[('statutory_code', 'in', ['paye', 'employee_nis', 'health_surcharge']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="manual_amount" string="Amount" readonly="1"/>
+                                    <field name="amount" widget="monetary" readonly="1" sum="Total Taxes"/>
+                                    <field name="reference" optional="show"/>
+                                    <field name="statutory_code" optional="hide"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Deductions" name="deductions">
+                            <field name="deduction_item_ids" readonly="run_state in ['approved', 'paid', 'cancelled']">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="pay_item_id" domain="[('category', '=', 'deduction'), ('statutory_code', '=', 'none'), ('code', 'not in', ['LOAN', 'SALARY_ADVANCE']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="rate" optional="show"/>
+                                    <field name="quantity" optional="show"/>
+                                    <field name="manual_amount" optional="show"/>
+                                    <field name="amount" widget="monetary" readonly="1" sum="Total Deductions"/>
+                                    <field name="reference" optional="show"/>
+                                    <field name="source" optional="hide"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Loans" name="loans">
+                            <field name="loan_item_ids" readonly="run_state in ['approved', 'paid', 'cancelled']">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="pay_item_id" domain="[('code', 'in', ['LOAN', 'SALARY_ADVANCE']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="manual_amount" string="Payment" optional="show"/>
+                                    <field name="amount" widget="monetary" readonly="1" sum="Total Loan Payments"/>
+                                    <field name="reference" optional="show"/>
+                                    <field name="remaining_balance" string="Balance" optional="show"/>
+                                    <field name="source" optional="hide"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Employer Contributions" name="employer_contributions">
+                            <field name="employer_item_ids" readonly="run_state in ['approved', 'paid', 'cancelled']">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="pay_item_id" domain="[('category', '=', 'employer'), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="manual_amount" readonly="1"/>
+                                    <field name="amount" widget="monetary" readonly="1" sum="Employer Contributions"/>
+                                    <field name="reference" optional="show"/>
+                                    <field name="statutory_code" optional="show"/>
+                                    <field name="source" optional="hide"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Employee &amp; Pay Details" name="employee_details">
+                            <group>
+                                <group string="Payroll">
+                                    <field name="pay_basis"/>
+                                    <field name="pay_frequency_id"/>
+                                    <field name="payroll_group_id"/>
+                                    <field name="salary_amount" widget="monetary" invisible="pay_basis != 'salary'"/>
+                                    <field name="period_salary" widget="monetary" invisible="pay_basis != 'salary'"/>
+                                    <field name="hourly_rate" widget="monetary" invisible="pay_basis != 'hourly'"/>
+                                    <field name="effective_hourly_rate" widget="monetary" readonly="1"/>
+                                    <field name="normal_hours_per_day"/>
+                                    <field name="normal_hours_per_week"/>
+                                </group>
+                                <group string="Payment">
+                                    <field name="payment_method"/>
+                                    <field name="bank_name" invisible="payment_method != 'bank'"/>
+                                    <field name="bank_account_number" invisible="payment_method != 'bank'"/>
+                                </group>
+                                <group string="Statutory Information">
+                                    <field name="bir_number"/>
+                                    <field name="nis_number" invisible="nis_exempt"/>
+                                    <field name="nis_exempt"/>
+                                    <field name="health_surcharge_exempt"/>
+                                    <field name="taxable_earnings" widget="monetary" readonly="1"/>
+                                    <field name="nis_insurable_earnings" widget="monetary" readonly="1"/>
+                                </group>
+                                <group string="Automatic Statutory Results">
+                                    <field name="nis_class_display" readonly="1"/>
+                                    <field name="paye_amount" widget="monetary" readonly="1"/>
+                                    <field name="employee_nis_amount" widget="monetary" readonly="1"/>
+                                    <field name="employer_nis_amount" widget="monetary" readonly="1"/>
+                                    <field name="health_surcharge_amount" widget="monetary" readonly="1"/>
+                                </group>
+                                <group string="Year to Date">
+                                    <field name="ytd_taxable_earnings" widget="monetary" readonly="1"/>
+                                    <field name="ytd_paye" widget="monetary" readonly="1"/>
+                                    <field name="ytd_employee_nis" widget="monetary" readonly="1"/>
+                                    <field name="ytd_health_surcharge" widget="monetary" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Attendance &amp; Hours" name="attendance">
+                            <group>
+                                <group string="Attendance Snapshot">
+                                    <field name="attendance_status" widget="badge"
+                                           decoration-success="attendance_status == 'ready'"
+                                           decoration-warning="attendance_status == 'needs_attention'"/>
+                                    <field name="attendance_loaded_at" readonly="1"/>
+                                    <field name="attendance_record_count" readonly="1"/>
+                                    <field name="incomplete_attendance_count" readonly="1"/>
+                                    <field name="attendance_confirmed" readonly="1"/>
+                                </group>
+                                <group string="Expected and Clocked">
+                                    <field name="scheduled_days" readonly="1"/>
+                                    <field name="scheduled_hours" readonly="1"/>
+                                    <field name="actual_worked_hours" readonly="1"/>
+                                    <field name="regular_hours" readonly="1"/>
+                                    <field name="overtime_hours" readonly="1"/>
+                                    <field name="pending_overtime_hours" readonly="1"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Payable Time">
+                                    <field name="paid_leave_hours" readonly="1"/>
+                                    <field name="unpaid_leave_hours" readonly="1"/>
+                                    <field name="public_holiday_hours" readonly="1"/>
+                                    <field name="attendance_adjustment_hours" string="Approved Hours Adjustment"/>
+                                    <field name="payable_hours" readonly="1"/>
+                                    <field name="unpaid_hours" readonly="1"/>
+                                </group>
+                                <group string="Review">
+                                    <field name="attendance_issue_summary" nolabel="1" readonly="1"/>
+                                    <field name="attendance_review_note" placeholder="Explain any clocking correction, paid leave decision, or accepted unpaid time..."/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Issues &amp; Notes" name="issues_notes">
+                            <group>
+                                <group string="Items Requiring Attention">
+                                    <field name="issue_count" readonly="1"/>
+                                    <field name="issue_summary" nolabel="1" readonly="1"/>
+                                </group>
+                                <group string="Hold or Exclusion">
+                                    <field name="hold_reason"/>
+                                </group>
+                            </group>
+                            <group string="Payroll Note">
+                                <field name="notes" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tt_payroll_runs" model="ir.actions.act_window">
+        <field name="name">Payroll Runs</field>
+        <field name="res_model">spx.tt.payroll.run</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tt_payroll_run_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a payroll run</p>
+            <p>Select the pay period and generate payroll. Odoo employees, attendance, automatic earnings, recurring items, and standard statutory lines are pulled together.</p>
+        </field>
+    </record>
+
+    <record id="action_tt_payroll_runs_view_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_tt_payroll_run_list"/>
+        <field name="act_window_id" ref="action_tt_payroll_runs"/>
+    </record>
+
+    <record id="action_tt_payroll_runs_view_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_tt_payroll_run_form"/>
+        <field name="act_window_id" ref="action_tt_payroll_runs"/>
+    </record>
+
+    <record id="action_tt_payroll_run_employees" model="ir.actions.act_window">
+        <field name="name">Employee Payroll Calculations</field>
+        <field name="res_model">spx.tt.payroll.run.employee</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tt_payroll_run_employee_search"/>
+    </record>
+
+    <record id="action_tt_payroll_run_employees_view_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_tt_payroll_run_employee_list"/>
+        <field name="act_window_id" ref="action_tt_payroll_run_employees"/>
+    </record>
+
+    <record id="action_tt_payroll_run_employees_view_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_tt_payroll_run_employee_form"/>
+        <field name="act_window_id" ref="action_tt_payroll_run_employees"/>
+    </record>
+</odoo>
