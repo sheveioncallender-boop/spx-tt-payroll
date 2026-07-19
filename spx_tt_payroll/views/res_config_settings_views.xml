@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add TT Payroll to Odoo's main Settings application. The app name
+         matches the technical module name so Odoo can reuse the payroll app
+         icon from the root menu in the Settings sidebar. -->
+    <record id="res_config_settings_view_form_tt_payroll" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.tt.payroll</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="75"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="active" eval="True"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="TT Payroll"
+                     string="TT Payroll"
+                     name="spx_tt_payroll"
+                     groups="spx_tt_payroll.group_tt_payroll_manager">
+                    <block title="Payroll Setup" name="tt_payroll_setup_settings">
+                        <setting id="tt_payroll_enabled_setting"
+                                 string="Enable TT Payroll"
+                                 help="Enable payroll processing for the selected company."
+                                 company_dependent="1">
+                            <field name="tt_payroll_enabled"/>
+                        </setting>
+                        <setting id="tt_payroll_default_frequency_setting"
+                                 string="Default Pay Frequency"
+                                 help="The default frequency suggested when setting up payroll employees."
+                                 company_dependent="1">
+                            <field name="tt_payroll_default_frequency_id"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                        </setting>
+                    </block>
+
+                    <block title="Default Working Hours" name="tt_payroll_working_hours_settings">
+                        <setting id="tt_payroll_hours_per_day_setting"
+                                 string="Default Hours per Day"
+                                 help="Used as the company default when an employee does not have a payroll-specific daily-hours value."
+                                 company_dependent="1">
+                            <field name="tt_payroll_default_hours_per_day" class="oe_inline"/>
+                            <span class="ms-2">hours</span>
+                        </setting>
+                        <setting id="tt_payroll_hours_per_week_setting"
+                                 string="Default Hours per Week"
+                                 help="Used to determine expected payroll hours and salary proration defaults."
+                                 company_dependent="1">
+                            <field name="tt_payroll_default_hours_per_week" class="oe_inline"/>
+                            <span class="ms-2">hours</span>
+                        </setting>
+                    </block>
+
+                    <block title="Review and Approval" name="tt_payroll_review_approval_settings">
+                        <setting id="tt_payroll_require_review_setting"
+                                 string="Require Payroll Review"
+                                 help="Require employee payroll calculations to be reviewed before payroll approval."
+                                 company_dependent="1">
+                            <field name="tt_payroll_require_review"/>
+                        </setting>
+                        <setting id="tt_payroll_require_approval_setting"
+                                 string="Require Payroll Approval"
+                                 help="Require an approval step before payroll can be marked as paid."
+                                 company_dependent="1">
+                            <field name="tt_payroll_require_approval"/>
+                        </setting>
+                    </block>
+
+                    <block title="Quick Access" name="tt_payroll_quick_access_settings">
+                        <setting id="tt_payroll_dashboard_access_setting"
+                                 string="Payroll Dashboard"
+                                 help="Open the TT Payroll dashboard to review payroll runs, alerts, statutory totals, and payslips.">
+                            <button name="action_open_tt_payroll_dashboard"
+                                    type="object"
+                                    string="Open TT Payroll Dashboard"
+                                    class="btn-link"
+                                    icon="fa-external-link"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Kept for backward compatibility with bookmarks from releases that
+         used a standalone payroll settings form. -->
+    <record id="view_tt_payroll_company_settings_form" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.company.settings.form</field>
+        <field name="model">spx.tt.payroll.company.settings</field>
+        <field name="arch" type="xml">
+            <form string="TT Payroll Settings" create="1" delete="0">
+                <header>
+                    <button name="action_apply"
+                            type="object"
+                            string="Save Settings"
+                            class="oe_highlight"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>TT Payroll Settings</h1>
+                        <p class="text-muted">
+                            These are company defaults. Employee and payroll-run values can still be changed where applicable.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group string="Company">
+                            <field name="company_id"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="payroll_enabled"/>
+                            <field name="default_frequency_id"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                        <group string="Default Working Hours">
+                            <field name="default_hours_per_day"/>
+                            <field name="default_hours_per_week"/>
+                        </group>
+                    </group>
+
+                    <group string="Review and Approval">
+                        <group>
+                            <field name="require_review"/>
+                            <field name="require_approval"/>
+                        </group>
+                        <group>
+                            <div class="text-muted">
+                                Small businesses may allow one payroll manager to prepare and approve payroll. Larger companies can keep review and approval as separate steps.
+                            </div>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tt_payroll_settings" model="ir.actions.act_window">
+        <field name="name">TT Payroll Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'module': 'spx_tt_payroll', 'bin_size': False}</field>
+    </record>
+</odoo>
