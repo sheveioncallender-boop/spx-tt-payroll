@@ -112,13 +112,7 @@ class TTEmployeeStatutoryProfile(models.Model):
     )
     notes = fields.Text()
 
-    _sql_constraints = [
-        (
-            "spx_tt_employee_statutory_profile_unique",
-            "unique(employee_id)",
-            "Each employee can only have one PAYE and statutory profile.",
-        )
-    ]
+    _spx_tt_employee_statutory_profile_unique = models.Constraint('unique(employee_id)', 'Each employee can only have one PAYE and statutory profile.')
 
     @api.constrains(
         "personal_allowance_override",

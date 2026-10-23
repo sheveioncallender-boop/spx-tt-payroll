@@ -1,3 +1,4 @@
+from ..models.calculation_security import INTERNAL
 from markupsafe import Markup, escape
 
 from odoo import api, fields, models, _
@@ -118,7 +119,7 @@ class TTPayrollHoursAdjustmentWizard(models.TransientModel):
         previous_net = line.net_pay
         new_adjustment = previous_adjustment + self.adjustment_hours
 
-        line.with_context(tt_payroll_hours_wizard=True).write(
+        line.with_context(tt_payroll_hours_wizard=INTERNAL).write(
             {"attendance_adjustment_hours": new_adjustment}
         )
         # Stored computed totals are normally refreshed by the rebuilt item lines.
@@ -128,7 +129,7 @@ class TTPayrollHoursAdjustmentWizard(models.TransientModel):
         )
 
         audit = self.env["spx.tt.payroll.hours.adjustment"].sudo().with_context(
-            tt_payroll_create_hours_audit=True
+            tt_payroll_create_hours_audit=INTERNAL
         ).create(
             {
                 "run_employee_id": line.id,

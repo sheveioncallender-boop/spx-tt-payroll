@@ -15,3 +15,5 @@ from . import hours_adjustment
 from . import time_off_snapshot
 
 from . import payroll_dashboard
+
+from . import payroll_integrity

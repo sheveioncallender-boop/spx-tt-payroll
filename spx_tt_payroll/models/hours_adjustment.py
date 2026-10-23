@@ -1,3 +1,4 @@
+from .calculation_security import INTERNAL
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
@@ -84,7 +85,7 @@ class TTPayrollHoursAdjustment(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        if not self.env.context.get("tt_payroll_create_hours_audit"):
+        if self.env.context.get("tt_payroll_create_hours_audit") is not INTERNAL:
             raise UserError(
                 _("Hours adjustment history can only be created from the Adjust Payable Hours window.")
             )

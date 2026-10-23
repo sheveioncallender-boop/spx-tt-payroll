@@ -98,6 +98,7 @@ class TTPayrollRunItem(models.Model):
         default="manual",
         required=True,
     )
+    one_off = fields.Boolean(string="One-off Payment", help="Include this earning once in the annual PAYE projection, for example a bonus.")
     taxable = fields.Boolean(
         default=True,
         help="Technical compatibility field. PAYE uses Exclude from PAYE as the user-facing control.",

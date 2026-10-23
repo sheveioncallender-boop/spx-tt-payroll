@@ -35,13 +35,7 @@ class TTPayrollGroup(models.Model):
     )
     employee_count = fields.Integer(compute="_compute_employee_count")
 
-    _sql_constraints = [
-        (
-            "spx_tt_payroll_group_code_company_unique",
-            "unique(code, company_id)",
-            "The payroll group code must be unique for each company.",
-        )
-    ]
+    _spx_tt_payroll_group_code_company_unique = models.Constraint('unique(code, company_id)', 'The payroll group code must be unique for each company.')
 
     @api.depends("employee_ids")
     def _compute_employee_count(self):

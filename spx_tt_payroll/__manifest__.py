@@ -1,6 +1,6 @@
 {
     "name": "Trinidad & Tobago Payroll",
-    "version": "19.0.1.8.5",
+    "version": "19.0.1.8.6",
     "summary": "Attendance-first Trinidad & Tobago payroll with statutory calculations, employee processing, and professional payslips",
     "description": """
 Trinidad & Tobago Payroll provides a complete, easy-to-use payroll workspace
@@ -59,6 +59,7 @@ Created and developed by Spxcorp Limited.
         "wizard/payroll_attention_views.xml",
         "wizard/payroll_dashboard_selector_views.xml",
         "views/payroll_run_views.xml",
+        "views/payroll_integrity_views.xml",
         "views/hr_employee_views.xml",
         "wizard/payroll_readiness_views.xml",
         "views/res_config_settings_views.xml",

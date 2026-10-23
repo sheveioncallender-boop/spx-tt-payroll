@@ -5,6 +5,9 @@ import pytz
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+from .calculation_math import projected_paye, td1_is_current
+from .calculation_security import INTERNAL, WORKFLOW, internal
+
 
 # Official NIBTT earnings classes effective 5 January 2026.
 # Amounts are weekly contributions. A None maximum means no upper limit.
@@ -376,13 +379,7 @@ class TTPayrollRunEmployee(models.Model):
         for line in self:
             line.time_off_snapshot_count = len(line.time_off_snapshot_ids)
 
-    _sql_constraints = [
-        (
-            "spx_tt_run_employee_unique",
-            "unique(run_id, employee_id)",
-            "An employee can only appear once in the same payroll run.",
-        )
-    ]
+    _spx_tt_run_employee_unique = models.Constraint('unique(run_id, employee_id)', 'An employee can only appear once in the same payroll run.')
 
     @api.depends(
         "item_line_ids.amount",
@@ -489,7 +486,7 @@ class TTPayrollRunEmployee(models.Model):
     def _find_nis_class(self, earnings):
         self.ensure_one()
         equivalent = self._equivalent_statutory_earnings(earnings)
-        amount = equivalent["amount"]
+        amount = self.currency_id.round(equivalent["amount"])
         basis = equivalent["basis"]
         for row in NIS_2026_CLASSES:
             name, weekly_min, weekly_max, monthly_min, monthly_max, employee, employer, class_z = row
@@ -537,6 +534,7 @@ class TTPayrollRunEmployee(models.Model):
                 ("run_id.payroll_year", "=", year),
                 ("run_id.payment_date", "<=", self.run_id.payment_date),
                 ("run_id.state", "in", ["approved", "paid"]),
+                ("review_state", "not in", ["on_hold", "excluded"]),
             ]
         )
         values["taxable"] += sum(previous.mapped("taxable_earnings"))
@@ -690,69 +688,36 @@ class TTPayrollRunEmployee(models.Model):
                 paye_amount = 0.0
                 paye_note = _("No PAYE because taxable earnings are zero.")
             else:
-                # Trinidad PAYE is calculated from the employee's PAYE-taxable
-                # earnings for the current pay period. Salary, overtime, and
-                # additions are taxable by default; only lines deliberately
-                # marked Exclude from PAYE are removed from this earnings base.
-                annual_periods = line._annual_period_count()
-                resident = profile.resident if profile else True
-                annual_personal_allowance = 0.0
-                if resident:
-                    annual_personal_allowance = (
-                        profile.personal_allowance_override
-                        if profile and profile.personal_allowance_override > 0
-                        else TT_PERSONAL_ALLOWANCE
-                    )
-                period_personal_allowance = annual_personal_allowance / annual_periods
-
-                annual_pension = (
-                    profile.approved_pension_annuity_annual if profile else 0.0
+                prior = line._get_ytd_values()
+                td1_valid = td1_is_current(profile, payment_date)
+                personal = TT_PERSONAL_ALLOWANCE if not profile or profile.resident else 0.0
+                if personal and td1_valid and profile.personal_allowance_override > 0:
+                    personal = profile.personal_allowance_override
+                # Payroll officers identify exceptional bonuses explicitly. All
+                # ordinary additions remain PAYE taxable by default.
+                one_off = sum(earnings.filtered(
+                    lambda item: not item.exclude_from_paye and item.one_off
+                ).mapped("amount"))
+                result = projected_paye(
+                    taxable=taxable_earnings, one_off=one_off,
+                    weekly_nis=employee_weekly, frequency=line._normal_frequency_code(),
+                    start=line.run_id.date_start, end=payment_date,
+                    previous_taxable=prior["taxable"], previous_nis=prior["employee_nis"],
+                    previous_paye=prior["paye"], previous_periods=prior["period_count"],
+                    personal_allowance=personal,
+                    pension=profile.approved_pension_annuity_annual if td1_valid else 0.0,
+                    other_deductions=profile.approved_other_deductions_annual if td1_valid else 0.0,
+                    credits=profile.approved_tax_credits_annual if td1_valid else 0.0,
                 )
-                period_pension = annual_pension / annual_periods
-                period_nis_relief = (
-                    employee_nis * TT_NIS_RELIEF_PERCENT / 100.0
-                )
-                period_combined_relief_cap = (
-                    TT_PENSION_NIS_RELIEF_LIMIT / annual_periods
-                )
-                period_pension_nis_relief = min(
-                    period_combined_relief_cap,
-                    period_pension + period_nis_relief,
-                )
-
-                annual_other_deductions = (
-                    profile.approved_other_deductions_annual if profile else 0.0
-                )
-                period_other_deductions = annual_other_deductions / annual_periods
-                period_deductions = (
-                    period_personal_allowance
-                    + period_pension_nis_relief
-                    + period_other_deductions
-                )
-                period_chargeable = max(taxable_earnings - period_deductions, 0.0)
-
-                annual_tax_credits = (
-                    profile.approved_tax_credits_annual if profile else 0.0
-                )
-                period_tax_credits = annual_tax_credits / annual_periods
-                gross_period_tax = line._calculate_period_income_tax(
-                    period_chargeable, annual_periods
-                )
-                paye_amount = max(gross_period_tax - period_tax_credits, 0.0)
+                paye_amount = result["amount"]
                 paye_note = _(
-                    "Automatic period PAYE. Taxable earnings TT$%.2f; period personal allowance TT$%.2f; 70%% NIS relief TT$%.2f; pension/NIS relief used TT$%.2f; other TD1 deductions TT$%.2f; chargeable income TT$%.2f; tax credits TT$%.2f; PAYE TT$%.2f."
-                ) % (
-                    taxable_earnings,
-                    period_personal_allowance,
-                    period_nis_relief,
-                    period_pension_nis_relief,
-                    period_other_deductions,
-                    period_chargeable,
-                    period_tax_credits,
-                    paye_amount,
-                )
+                    "Projected PAYE: annual taxable earnings TT$%.2f; personal allowance TT$%.2f; "
+                    "pension and NIS relief TT$%.2f; chargeable TT$%.2f; earlier PAYE TT$%.2f; "
+                    "%.2f pays remaining. PAYE TT$%.2f. Only confirmed, current TD1 adjustments apply."
+                ) % (result["annual_gross"], personal, result["relief"], result["chargeable"],
+                     prior["paye"], result["periods"], paye_amount)
             line._set_statutory_line(
-                "paye", paye_amount, _("Period calculation"), paye_note
+                "paye", paye_amount, _("Year-to-date projection"), paye_note
             )
         return True
 
@@ -879,6 +844,23 @@ class TTPayrollRunEmployee(models.Model):
                     "sequence": sequence,
                 }
             )
+
+        payment_date = self.run_id.payment_date or self.run_id.date_end
+        profile = self._get_statutory_profile()
+        if payment_date and payment_date < NIS_2026_EFFECTIVE_DATE and not self.nis_exempt:
+            add("unsupported_nis_date", _("NIS rate table is unavailable for this date"),
+                _("This build supports NIS from 5 January 2026. Do not approve an earlier payroll."),
+                "calculation", _("Review Calculation"), 45)
+        if profile and not td1_is_current(profile, payment_date) and any([
+            profile.personal_allowance_override, profile.approved_pension_annuity_annual,
+            profile.approved_other_deductions_annual, profile.approved_tax_credits_annual,
+        ]):
+            add("td1_not_current", _("TD1 adjustments need confirmation"),
+                _("Confirm the TD1 and its dates, or remove unused adjustments. They have not reduced PAYE."),
+                "statutory_profile", _("Open Statutory Details"), 46)
+        if not self.payment_method:
+            add("missing_payment_method", _("Payment method is missing"),
+                _("Choose how this employee will be paid."), "employee_profile", _("Open Banking Details"), 65)
 
         if not self.pay_basis:
             add(
@@ -1015,7 +997,7 @@ class TTPayrollRunEmployee(models.Model):
                 and self.paid_leave_hours <= 0
                 and self.public_holiday_hours <= 0
             )
-            if no_attendance and not adjustment_recorded:
+            if no_attendance and not adjustment_recorded and not (self.attendance_confirmed and (self.attendance_review_note or "").strip()):
                 add(
                     "no_attendance",
                     _("No attendance was found for the period"),
@@ -1024,7 +1006,7 @@ class TTPayrollRunEmployee(models.Model):
                     _("Review Attendances"),
                     140,
                 )
-            if self.missing_hours > 0.005:
+            if self.missing_hours > 0.005 and not (self.attendance_confirmed and (self.attendance_review_note or "").strip()):
                 add(
                     "payable_hours_short",
                     _("Payable hours are below expected hours"),
@@ -1344,7 +1326,7 @@ class TTPayrollRunEmployee(models.Model):
                 effective_rate = line.period_salary / line.scheduled_hours
             elif line.pay_basis == "hourly":
                 effective_rate = line.hourly_rate
-            super(TTPayrollRunEmployee, line.with_context(tt_payroll_internal_write=True)).write(
+            super(TTPayrollRunEmployee, line.with_context(tt_payroll_internal_write=INTERNAL)).write(
                 {
                     "payable_hours": payable,
                     "missing_hours": missing,
@@ -1383,8 +1365,23 @@ class TTPayrollRunEmployee(models.Model):
                 attendance._get_worked_hours_in_range(start_naive, end_naive)
                 for attendance in completed
             )
-            raw_overtime = sum(completed.mapped("overtime_hours"))
-            approved_overtime = sum(completed.mapped("validated_overtime_hours"))
+            raw_overtime = sum(max(0.0, attendance.overtime_hours) for attendance in completed)
+            approved_overtime = sum(max(0.0, attendance.validated_overtime_hours) for attendance in completed)
+            raw_overtime = min(actual_worked, raw_overtime)
+            approved_overtime = min(raw_overtime, approved_overtime)
+            cross_boundary = completed.filtered(
+                lambda attendance: attendance.check_in < start_naive or attendance.check_out > end_naive
+            )
+            if cross_boundary:
+                # Split by Odoo's own worked-hours calculation, including its breaks.
+                raw_overtime = approved_overtime = 0.0
+                for attendance in completed:
+                    total = attendance._get_worked_hours_in_range(attendance.check_in, attendance.check_out)
+                    inside = attendance._get_worked_hours_in_range(start_naive, end_naive)
+                    share = inside / total if total > 0 else 0.0
+                    raw_overtime += min(inside, max(0.0, attendance.overtime_hours) * share)
+                    approved_overtime += min(inside, max(0.0, attendance.validated_overtime_hours) * share)
+                approved_overtime = min(raw_overtime, approved_overtime)
             pending_overtime = max(0.0, raw_overtime - approved_overtime)
             regular_hours = max(0.0, actual_worked - raw_overtime)
             time_off = line._collect_time_off_snapshot(
@@ -1472,12 +1469,12 @@ class TTPayrollRunEmployee(models.Model):
                     "• %s" % issue for issue in attendance_issues
                 ),
             }
-            line.time_off_snapshot_ids.sudo().unlink()
+            line.time_off_snapshot_ids.sudo().with_context(tt_payroll_internal_write=INTERNAL).unlink()
             if time_off["snapshot_values"]:
-                self.env["spx.tt.payroll.time.off.snapshot"].sudo().create(
+                self.env["spx.tt.payroll.time.off.snapshot"].sudo().with_context(tt_payroll_internal_write=INTERNAL).create(
                     time_off["snapshot_values"]
                 )
-            super(TTPayrollRunEmployee, line.with_context(tt_payroll_internal_write=True)).write(values)
+            super(TTPayrollRunEmployee, line.with_context(tt_payroll_internal_write=INTERNAL)).write(values)
             line._recalculate_payable_hours()
         return True
 
@@ -1682,6 +1679,10 @@ class TTPayrollRunEmployee(models.Model):
                         )
                     )
 
+            line.item_line_ids.filtered(
+                lambda item: item.source == "recurring" and item.calculation_method == "percentage"
+            ).write({"base_amount": primary_amount})
+
             # Respect any existing statutory item, including a line the payroll
             # officer may already have entered in an earlier Phase 2A payroll.
             existing_statutory_codes = set(
@@ -1811,13 +1812,13 @@ class TTPayrollRunEmployee(models.Model):
             manual_adjustment_without_history = bool(
                 line.attendance_adjustment_hours and not line.hours_adjustment_ids
             )
-            if (unresolved_exception or manual_adjustment_without_history) and not line.attendance_review_note:
+            if (unresolved_exception or manual_adjustment_without_history) and not (line.attendance_review_note or "").strip():
                 raise UserError(
                     _(
                         "Enter an Attendance Review Note before confirming unresolved attendance exceptions. Manual adjustments made through Adjust Payable Hours already have their own reason history."
                     )
                 )
-            line.with_context(tt_payroll_internal_write=True).write(
+            line.with_context(tt_payroll_internal_write=INTERNAL).write(
                 {"attendance_confirmed": True, "attendance_status": "ready"}
             )
         return True
@@ -1826,11 +1827,11 @@ class TTPayrollRunEmployee(models.Model):
         self._check_editable()
         for line in self:
             snapshot = line._employee_snapshot_values(line.employee_id, line.run_id)
-            line.with_context(tt_payroll_internal_write=True).write(snapshot)
+            line.with_context(tt_payroll_internal_write=INTERNAL).write(snapshot)
             line._pull_attendance_snapshot()
             line.item_line_ids.filtered(
                 lambda item: item.source in ("basic", "salary", "attendance", "recurring")
-            ).unlink()
+            ).with_context(tt_payroll_internal_write=INTERNAL).unlink()
             line._load_default_items()
         return {"type": "ir.actions.client", "tag": "reload"}
 
@@ -2069,14 +2070,13 @@ class TTPayrollRunEmployee(models.Model):
         return self.employee_id.action_tt_open_attendances()
 
     def write(self, vals):
-        if not self.env.context.get("tt_payroll_allow_locked_write"):
-            editable_fields = set(vals) - {"message_follower_ids", "message_ids", "activity_ids"}
-            if editable_fields:
-                self._check_editable()
+        editable_fields = set(vals) - {"message_follower_ids", "message_ids", "activity_ids"}
+        if editable_fields:
+            self._check_editable()
         if (
             "attendance_adjustment_hours" in vals
-            and not self.env.context.get("tt_payroll_internal_write")
-            and not self.env.context.get("tt_payroll_hours_wizard")
+            and not internal(self)
+            and not self.env.context.get("tt_payroll_hours_wizard") is INTERNAL
         ):
             raise UserError(
                 _(
@@ -2086,10 +2086,10 @@ class TTPayrollRunEmployee(models.Model):
         result = super().write(vals)
         if (
             "attendance_adjustment_hours" in vals
-            and not self.env.context.get("tt_payroll_internal_write")
+            and not internal(self)
         ):
             for line in self:
-                super(TTPayrollRunEmployee, line.with_context(tt_payroll_internal_write=True)).write(
+                super(TTPayrollRunEmployee, line.with_context(tt_payroll_internal_write=INTERNAL)).write(
                     {"attendance_confirmed": False, "attendance_status": "needs_attention"}
                 )
                 line._recalculate_payable_hours()

@@ -33,3 +33,4 @@ access_tt_payroll_time_off_snapshot_user,Payroll Time Off snapshot user,model_sp
 access_tt_payroll_time_off_snapshot_officer,Payroll Time Off snapshot officer,model_spx_tt_payroll_time_off_snapshot,spx_tt_payroll.group_tt_payroll_officer,1,1,1,1
 access_tt_payroll_dashboard_user,Payroll dashboard user,model_spx_tt_payroll_dashboard,spx_tt_payroll.group_tt_payroll_user,1,1,1,1
 access_tt_payroll_dashboard_selector_user,Payroll dashboard selector user,model_spx_tt_payroll_dashboard_selector,spx_tt_payroll.group_tt_payroll_user,1,1,1,1
+access_tt_payroll_change_user,Payroll change history,model_spx_tt_payroll_change,spx_tt_payroll.group_tt_payroll_user,1,0,0,0

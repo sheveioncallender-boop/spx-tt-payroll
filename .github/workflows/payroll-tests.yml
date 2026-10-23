@@ -1,0 +1,38 @@
+name: TT Payroll calculation and Odoo 19 tests
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  community:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: postgres
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install and test on Odoo 19 Community
+        run: |
+          set -o pipefail
+          mkdir -p test-results
+          docker run --rm --network host \
+            -v "$PWD:/mnt/extra-addons:ro" \
+            odoo:19.0 odoo -d tt_payroll_test \
+            --db_host=127.0.0.1 --db_port=5432 --db_user=odoo --db_password=odoo \
+            -i spx_tt_payroll --without-demo=all --test-enable \
+            --test-tags /spx_tt_payroll --stop-after-init --http-port=8079 \
+            2>&1 | tee test-results/community.log
+          ! grep -Eq '([1-9][0-9]* failed|[1-9][0-9]* error\(s\)|FAIL:|ERROR:.*test_)' test-results/community.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: odoo19-community-test-log
+          path: test-results/community.log

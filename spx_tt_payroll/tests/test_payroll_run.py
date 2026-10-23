@@ -1,3 +1,4 @@
+from ..models.calculation_security import INTERNAL
 from odoo.tests.common import TransactionCase
 
 
@@ -47,9 +48,9 @@ class TestTTPayrollRun(TransactionCase):
             {
                 "company_id": self.env.company.id,
                 "pay_frequency_id": self.monthly.id,
-                "date_start": "2026-05-01",
-                "date_end": "2026-05-31",
-                "payment_date": "2026-05-31",
+                "date_start": "2026-01-01",
+                "date_end": "2026-01-31",
+                "payment_date": "2026-01-31",
             }
         )
 
@@ -112,8 +113,8 @@ class TestTTPayrollRun(TransactionCase):
         self.assertAlmostEqual(line.employer_nis_amount, 976.0, places=2)
         self.assertAlmostEqual(line.health_surcharge_amount, 33.0, places=2)
         self.assertEqual(line.nis_class_display, "Class XII")
-        self.assertAlmostEqual(line.paye_amount, 477.10, places=2)
-        self.assertAlmostEqual(line.net_pay, 8751.90, places=2)
+        self.assertAlmostEqual(line.paye_amount, 469.98, places=2)
+        self.assertAlmostEqual(line.net_pay, 8759.02, places=2)
 
 
 
@@ -130,7 +131,7 @@ class TestTTPayrollRun(TransactionCase):
             lambda record: record.employee_id == self.employee
         )
         self._apply_hours_adjustment(line, line.scheduled_hours)
-        self.assertAlmostEqual(line.paye_amount, 432.28, places=2)
+        self.assertAlmostEqual(line.paye_amount, 425.16, places=2)
         self.assertAlmostEqual(line.employee_nis_amount, 488.0, places=2)
         self.assertAlmostEqual(line.health_surcharge_amount, 33.0, places=2)
 
@@ -162,11 +163,16 @@ class TestTTPayrollRun(TransactionCase):
         self.assertAlmostEqual(line.employee_nis_amount, 488.0, places=2)
         self.assertAlmostEqual(line.employer_nis_amount, 976.0, places=2)
         self.assertAlmostEqual(line.health_surcharge_amount, 33.0, places=2)
-        self.assertAlmostEqual(line.paye_amount, 414.60, places=2)
-        self.assertAlmostEqual(line.net_pay, 8564.40, places=2)
+        self.assertAlmostEqual(line.paye_amount, 407.48, places=2)
+        self.assertAlmostEqual(line.net_pay, 8571.52, places=2)
 
     def test_period_paye_matches_five_monday_month_benchmark(self):
         employee = self._create_benchmark_employee("PAYE Five Monday Employee")
+        self.env["spx.tt.employee.statutory.profile"].create({
+            "employee_id": employee.id, "opening_ytd_year": 2026,
+            "opening_period_count": 5, "opening_taxable_earnings": 47500,
+            "opening_employee_nis": 2562, "opening_paye": 2037.40,
+        })
         run = self.env["spx.tt.payroll.run"].create(
             {
                 "company_id": self.env.company.id,
@@ -186,8 +192,8 @@ class TestTTPayrollRun(TransactionCase):
         self.assertAlmostEqual(line.employee_nis_amount, 610.0, places=2)
         self.assertAlmostEqual(line.employer_nis_amount, 1220.0, places=2)
         self.assertAlmostEqual(line.health_surcharge_amount, 41.25, places=2)
-        self.assertAlmostEqual(line.paye_amount, 393.25, places=2)
-        self.assertAlmostEqual(line.net_pay, 8455.50, places=2)
+        self.assertAlmostEqual(line.paye_amount, 407.49, places=2)
+        self.assertAlmostEqual(line.net_pay, 8441.26, places=2)
 
     def test_recurring_salary_cannot_duplicate_system_salary(self):
         salary_item = self.env.ref("spx_tt_payroll.pay_item_basic")
@@ -228,7 +234,7 @@ class TestTTPayrollRun(TransactionCase):
         line._calculate_statutory_items()
         self.assertAlmostEqual(line.taxable_earnings, 9500.0, places=2)
         self.assertAlmostEqual(line.gross_pay, 9750.0, places=2)
-        self.assertAlmostEqual(line.paye_amount, 414.60, places=2)
+        self.assertAlmostEqual(line.paye_amount, 407.48, places=2)
         self.assertAlmostEqual(line.employee_nis_amount, 488.0, places=2)
         self.assertAlmostEqual(line.health_surcharge_amount, 33.0, places=2)
 
@@ -322,7 +328,7 @@ class TestTTPayrollRun(TransactionCase):
         line = run.employee_line_ids.filtered(
             lambda record: record.employee_id == self.employee
         )
-        line.with_context(tt_payroll_internal_write=True).write(
+        line.with_context(tt_payroll_internal_write=INTERNAL).write(
             {
                 "regular_hours": 144.0,
                 "paid_leave_hours": 16.0,
@@ -341,7 +347,7 @@ class TestTTPayrollRun(TransactionCase):
         line = run.employee_line_ids.filtered(
             lambda record: record.employee_id == self.employee
         )
-        line.with_context(tt_payroll_internal_write=True).write(
+        line.with_context(tt_payroll_internal_write=INTERNAL).write(
             {
                 "regular_hours": 152.0,
                 "paid_leave_hours": 0.0,

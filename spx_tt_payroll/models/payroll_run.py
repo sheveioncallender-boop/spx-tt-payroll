@@ -359,7 +359,7 @@ class TTPayrollRun(models.Model):
             [{"run_id": self.id, "employee_id": employee.id} for employee in employees]
         )
         if change_state:
-            self.state = "attendance_review"
+            self._set_state("attendance_review")
         if not silent:
             self.message_post(
                 body=_(
@@ -387,7 +387,7 @@ class TTPayrollRun(models.Model):
         if not self.employee_line_ids:
             raise UserError(_("Generate the payroll before refreshing attendance."))
         self.employee_line_ids.action_refresh_attendance()
-        self.state = "attendance_review"
+        self._set_state("attendance_review")
         self.message_post(body=_("Attendance and automatic attendance-based earnings were refreshed."))
         return {"type": "ir.actions.client", "tag": "reload"}
 
@@ -413,7 +413,7 @@ class TTPayrollRun(models.Model):
         for run in self:
             if not run.employee_line_ids:
                 raise UserError(_("Load employees before starting attendance review."))
-            run.state = "attendance_review"
+            run._set_state("attendance_review")
         return True
 
     def action_calculate(self):
@@ -423,13 +423,13 @@ class TTPayrollRun(models.Model):
                 raise UserError(_("Generate the payroll before calculating."))
             run.employee_line_ids._recalculate_payable_hours()
             run.employee_line_ids._rebuild_attendance_earnings()
-            run.state = "calculated"
+            run._set_state("calculated")
         return True
 
     def action_submit_for_review(self):
         self._check_state({"calculated"})
         for run in self:
-            run.state = "under_review"
+            run._set_state("under_review")
         return True
 
     def action_approve(self):
@@ -460,7 +460,7 @@ class TTPayrollRun(models.Model):
                         )
                         % len(unreviewed_lines)
                     )
-            run.state = "approved"
+            run._set_state("approved")
         return True
 
     def action_mark_paid(self):

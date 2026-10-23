@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_tt_payroll_run_history" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.run.history</field>
+        <field name="model">spx.tt.payroll.run</field>
+        <field name="inherit_id" ref="view_tt_payroll_run_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Change History">
+                    <field name="change_ids" readonly="1">
+                        <list create="0" edit="0" delete="0">
+                            <field name="changed_at"/><field name="changed_by"/>
+                            <field name="employee_name"/><field name="description"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="rule_tt_payroll_change_company" model="ir.rule">
+        <field name="name">Payroll history by company</field>
+        <field name="model_id" ref="model_spx_tt_payroll_change"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="view_tt_payroll_change_form" model="ir.ui.view">
+        <field name="name">spx.tt.payroll.change.form</field>
+        <field name="model">spx.tt.payroll.change</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Change" create="0" edit="0" delete="0">
+                <sheet><group>
+                    <field name="run_id"/><field name="employee_name"/>
+                    <field name="description"/><field name="changed_by"/><field name="changed_at"/>
+                </group><field name="details"/></sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

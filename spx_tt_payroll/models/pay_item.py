@@ -75,13 +75,7 @@ class TTPayItem(models.Model):
     )
     description = fields.Text()
 
-    _sql_constraints = [
-        (
-            "spx_tt_pay_item_code_company_unique",
-            "unique(code, company_id)",
-            "The payroll item code must be unique for the selected company.",
-        )
-    ]
+    _spx_tt_pay_item_code_company_unique = models.Constraint('unique(code, company_id)', 'The payroll item code must be unique for the selected company.')
 
     @api.depends("company_id")
     def _compute_currency_id(self):

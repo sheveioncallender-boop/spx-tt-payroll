@@ -1,0 +1,3111 @@
+{
+  "baseline_version": "19.0.1.8.6",
+  "method": "Actual source methods with ORM boundary doubles; no Odoo database",
+  "summary": {
+    "PASS": 330,
+    "FAIL": 0,
+    "ERROR": 0
+  },
+  "benchmarks": [
+    {
+      "cycle": "MONTHLY",
+      "gross": 5000,
+      "expected": {
+        "paye": 0,
+        "employee_nis": 261.2,
+        "health_surcharge": 33,
+        "net": 4705.8
+      },
+      "actual": {
+        "paye": 0.0,
+        "employee_nis": 261.2,
+        "employer_nis": 522.4,
+        "health_surcharge": 33.0,
+        "net": 4705.8
+      }
+    },
+    {
+      "cycle": "MONTHLY",
+      "gross": 7500,
+      "expected": {
+        "paye": 0,
+        "employee_nis": 390.8,
+        "health_surcharge": 33,
+        "net": 7076.2
+      },
+      "actual": {
+        "paye": 0.0,
+        "employee_nis": 390.8,
+        "employer_nis": 781.6,
+        "health_surcharge": 33.0,
+        "net": 7076.2
+      }
+    },
+    {
+      "cycle": "MONTHLY",
+      "gross": 9500,
+      "expected": {
+        "paye": 407.48,
+        "employee_nis": 488,
+        "health_surcharge": 33,
+        "net": 8571.52
+      },
+      "actual": {
+        "paye": 407.48,
+        "employee_nis": 488.0,
+        "employer_nis": 976.0,
+        "health_surcharge": 33.0,
+        "net": 8571.52
+      }
+    },
+    {
+      "cycle": "MONTHLY",
+      "gross": 12000,
+      "expected": {
+        "paye": 1011.33,
+        "employee_nis": 599.6,
+        "health_surcharge": 33,
+        "net": 10356.07
+      },
+      "actual": {
+        "paye": 1011.33,
+        "employee_nis": 599.6,
+        "employer_nis": 1199.2,
+        "health_surcharge": 33.0,
+        "net": 10356.07
+      }
+    },
+    {
+      "cycle": "MONTHLY",
+      "gross": 15000,
+      "expected": {
+        "paye": 1746.46,
+        "employee_nis": 678,
+        "health_surcharge": 33,
+        "net": 12542.54
+      },
+      "actual": {
+        "paye": 1746.46,
+        "employee_nis": 678.0,
+        "employer_nis": 1356.0,
+        "health_surcharge": 33.0,
+        "net": 12542.54
+      }
+    },
+    {
+      "cycle": "MONTHLY",
+      "gross": 100000,
+      "expected": {
+        "paye": 23429.09,
+        "employee_nis": 678,
+        "health_surcharge": 33,
+        "net": 75859.91
+      },
+      "actual": {
+        "paye": 23429.09,
+        "employee_nis": 678.0,
+        "employer_nis": 1356.0,
+        "health_surcharge": 33.0,
+        "net": 75859.91
+      }
+    },
+    {
+      "cycle": "WEEKLY",
+      "gross": 109,
+      "expected": {
+        "paye": 0,
+        "employee_nis": 0,
+        "health_surcharge": 4.8,
+        "net": 104.2
+      },
+      "actual": {
+        "paye": 0.0,
+        "employee_nis": 0.0,
+        "employer_nis": 0.0,
+        "health_surcharge": 4.8,
+        "net": 104.2
+      }
+    },
+    {
+      "cycle": "WEEKLY",
+      "gross": 110,
+      "expected": {
+        "paye": 0,
+        "employee_nis": 0,
+        "health_surcharge": 8.25,
+        "net": 101.75
+      },
+      "actual": {
+        "paye": 0.0,
+        "employee_nis": 0.0,
+        "employer_nis": 0.0,
+        "health_surcharge": 8.25,
+        "net": 101.75
+      }
+    },
+    {
+      "cycle": "WEEKLY",
+      "gross": 200,
+      "expected": {
+        "paye": 0,
+        "employee_nis": 14.6,
+        "health_surcharge": 8.25,
+        "net": 177.15
+      },
+      "actual": {
+        "paye": 0.0,
+        "employee_nis": 14.6,
+        "employer_nis": 29.2,
+        "health_surcharge": 8.25,
+        "net": 177.15
+      }
+    },
+    {
+      "cycle": "WEEKLY",
+      "gross": 2000,
+      "expected": {
+        "paye": 48.16,
+        "employee_nis": 109.4,
+        "health_surcharge": 8.25,
+        "net": 1834.19
+      },
+      "actual": {
+        "paye": 48.16,
+        "employee_nis": 109.4,
+        "employer_nis": 218.8,
+        "health_surcharge": 8.25,
+        "net": 1834.19
+      }
+    },
+    {
+      "cycle": "WEEKLY",
+      "gross": 4000,
+      "expected": {
+        "paye": 537.65,
+        "employee_nis": 169.5,
+        "health_surcharge": 8.25,
+        "net": 3284.6
+      },
+      "actual": {
+        "paye": 537.65,
+        "employee_nis": 169.5,
+        "employer_nis": 339.0,
+        "health_surcharge": 8.25,
+        "net": 3284.6
+      }
+    },
+    {
+      "cycle": "WEEKLY",
+      "gross": 30000,
+      "expected": {
+        "paye": 7483.64,
+        "employee_nis": 169.5,
+        "health_surcharge": 8.25,
+        "net": 22338.61
+      },
+      "actual": {
+        "paye": 7483.64,
+        "employee_nis": 169.5,
+        "employer_nis": 339.0,
+        "health_surcharge": 8.25,
+        "net": 22338.61
+      }
+    }
+  ],
+  "results": [
+    {
+      "name": "Baseline version",
+      "group": "package",
+      "status": "PASS",
+      "expected": "19.0.1.8.6",
+      "actual": "19.0.1.8.6"
+    },
+    {
+      "name": "Accounting and Enterprise payroll remain optional",
+      "group": "package",
+      "status": "PASS",
+      "expected": [
+        "hr",
+        "hr_attendance",
+        "hr_holidays",
+        "mail"
+      ],
+      "actual": [
+        "hr",
+        "hr_attendance",
+        "hr_holidays",
+        "mail"
+      ]
+    },
+    {
+      "name": "Python syntax: __init__.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: __manifest__.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.3.0/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.3.1/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.3.2/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.4.0/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.4.1/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.4.2/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.4.3/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.5.0/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.6.0/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.8.6/post-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: migrations/19.0.1.8.6/pre-migration.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/__init__.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/calculation_math.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/calculation_security.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/employee_pay_item.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/employee_statutory_profile.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/hours_adjustment.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/hr_employee.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/pay_frequency.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/pay_item.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/payroll_dashboard.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/payroll_group.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/payroll_integrity.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/payroll_run.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/payroll_run_employee.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/payroll_run_item.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/res_company.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/res_config_settings.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: models/time_off_snapshot.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: tests/__init__.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: tests/test_calculation_fixes.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: tests/test_payroll_foundation.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: tests/test_payroll_run.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: wizard/__init__.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: wizard/payroll_attention.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: wizard/payroll_dashboard_selector.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: wizard/payroll_hours_adjustment.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Python syntax: wizard/payroll_readiness.py",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: security/payroll_security.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: security/ir.model.access.csv",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: data/pay_frequency_data.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: data/pay_item_data.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: data/payroll_run_sequence.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/payroll_group_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/pay_item_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/employee_pay_item_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/employee_statutory_profile_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/time_off_snapshot_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: wizard/payroll_hours_adjustment_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: wizard/payroll_attention_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: wizard/payroll_dashboard_selector_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/payroll_run_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/payroll_integrity_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/hr_employee_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: wizard/payroll_readiness_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/res_config_settings_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/payroll_dashboard_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: views/payroll_menus.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: reports/payslip_templates.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: reports/payslip_report.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: static/src/css/tt_payroll_employee.css",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Manifest file: static/src/css/tt_payroll_dashboard.css",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: data/employee_sequence_data.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: data/pay_frequency_data.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: data/pay_item_data.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: data/payroll_run_sequence.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: reports/payslip_report.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: reports/payslip_templates.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: security/payroll_security.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/employee_pay_item_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/employee_statutory_profile_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/hr_employee_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/pay_item_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/payroll_dashboard_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/payroll_group_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/payroll_integrity_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/payroll_menus.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/payroll_run_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/res_config_settings_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: views/time_off_snapshot_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: wizard/payroll_attention_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: wizard/payroll_dashboard_selector_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: wizard/payroll_hours_adjustment_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "XML parse: wizard/payroll_readiness_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: data/employee_sequence_data.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: data/pay_frequency_data.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: data/pay_item_data.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: data/payroll_run_sequence.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: reports/payslip_report.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: reports/payslip_templates.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: security/payroll_security.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/employee_pay_item_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo list schema: employee_pay_item_views.xml #1",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/employee_statutory_profile_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/hr_employee_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo list schema: hr_employee_views.xml #1",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/pay_item_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo list schema: pay_item_views.xml #1",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/payroll_dashboard_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/payroll_group_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo list schema: payroll_group_views.xml #1",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/payroll_integrity_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/payroll_menus.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/payroll_run_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo list schema: payroll_run_views.xml #1",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo list schema: payroll_run_views.xml #2",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/res_config_settings_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: views/time_off_snapshot_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo list schema: time_off_snapshot_views.xml #1",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: wizard/payroll_attention_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: wizard/payroll_dashboard_selector_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: wizard/payroll_hours_adjustment_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo list schema: payroll_hours_adjustment_views.xml #1",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo XML schema: wizard/payroll_readiness_views.xml",
+      "group": "package",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Odoo 19 supported SQL constraint declarations",
+      "group": "compatibility",
+      "status": "PASS",
+      "expected": [],
+      "actual": []
+    },
+    {
+      "name": "All 16 NIBTT rows including employer/Class Z amounts",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": [
+        [
+          "I",
+          200,
+          339.99,
+          867,
+          1472.99,
+          14.6,
+          29.2,
+          2.2
+        ],
+        [
+          "II",
+          340,
+          449.99,
+          1473,
+          1949.99,
+          21.3,
+          42.6,
+          3.2
+        ],
+        [
+          "III",
+          450,
+          609.99,
+          1950,
+          2642.99,
+          28.6,
+          57.2,
+          4.3
+        ],
+        [
+          "IV",
+          610,
+          759.99,
+          2643,
+          3292.99,
+          37,
+          74,
+          5.56
+        ],
+        [
+          "V",
+          760,
+          929.99,
+          3293,
+          4029.99,
+          45.6,
+          91.2,
+          6.84
+        ],
+        [
+          "VI",
+          930,
+          1119.99,
+          4030,
+          4852.99,
+          55.4,
+          110.8,
+          8.32
+        ],
+        [
+          "VII",
+          1120,
+          1299.99,
+          4853,
+          5632.99,
+          65.3,
+          130.6,
+          9.8
+        ],
+        [
+          "VIII",
+          1300,
+          1489.99,
+          5633,
+          6456.99,
+          75.3,
+          150.6,
+          11.3
+        ],
+        [
+          "IX",
+          1490,
+          1709.99,
+          6457,
+          7409.99,
+          86.4,
+          172.8,
+          12.96
+        ],
+        [
+          "X",
+          1710,
+          1909.99,
+          7410,
+          8276.99,
+          97.7,
+          195.4,
+          14.66
+        ],
+        [
+          "XI",
+          1910,
+          2139.99,
+          8277,
+          9272.99,
+          109.4,
+          218.8,
+          16.42
+        ],
+        [
+          "XII",
+          2140,
+          2379.99,
+          9273,
+          10312.99,
+          122,
+          244,
+          18.3
+        ],
+        [
+          "XIII",
+          2380,
+          2629.99,
+          10313,
+          11396.99,
+          135.3,
+          270.6,
+          20.3
+        ],
+        [
+          "XIV",
+          2630,
+          2919.99,
+          11397,
+          12652.99,
+          149.9,
+          299.8,
+          22.49
+        ],
+        [
+          "XV",
+          2920,
+          3137.99,
+          12653,
+          13599.99,
+          163.6,
+          327.2,
+          24.55
+        ],
+        [
+          "XVI",
+          3138,
+          null,
+          13600,
+          null,
+          169.5,
+          339,
+          25.43
+        ]
+      ],
+      "actual": [
+        [
+          "I",
+          200.0,
+          339.99,
+          867.0,
+          1472.99,
+          14.6,
+          29.2,
+          2.2
+        ],
+        [
+          "II",
+          340.0,
+          449.99,
+          1473.0,
+          1949.99,
+          21.3,
+          42.6,
+          3.2
+        ],
+        [
+          "III",
+          450.0,
+          609.99,
+          1950.0,
+          2642.99,
+          28.6,
+          57.2,
+          4.3
+        ],
+        [
+          "IV",
+          610.0,
+          759.99,
+          2643.0,
+          3292.99,
+          37.0,
+          74.0,
+          5.56
+        ],
+        [
+          "V",
+          760.0,
+          929.99,
+          3293.0,
+          4029.99,
+          45.6,
+          91.2,
+          6.84
+        ],
+        [
+          "VI",
+          930.0,
+          1119.99,
+          4030.0,
+          4852.99,
+          55.4,
+          110.8,
+          8.32
+        ],
+        [
+          "VII",
+          1120.0,
+          1299.99,
+          4853.0,
+          5632.99,
+          65.3,
+          130.6,
+          9.8
+        ],
+        [
+          "VIII",
+          1300.0,
+          1489.99,
+          5633.0,
+          6456.99,
+          75.3,
+          150.6,
+          11.3
+        ],
+        [
+          "IX",
+          1490.0,
+          1709.99,
+          6457.0,
+          7409.99,
+          86.4,
+          172.8,
+          12.96
+        ],
+        [
+          "X",
+          1710.0,
+          1909.99,
+          7410.0,
+          8276.99,
+          97.7,
+          195.4,
+          14.66
+        ],
+        [
+          "XI",
+          1910.0,
+          2139.99,
+          8277.0,
+          9272.99,
+          109.4,
+          218.8,
+          16.42
+        ],
+        [
+          "XII",
+          2140.0,
+          2379.99,
+          9273.0,
+          10312.99,
+          122.0,
+          244.0,
+          18.3
+        ],
+        [
+          "XIII",
+          2380.0,
+          2629.99,
+          10313.0,
+          11396.99,
+          135.3,
+          270.6,
+          20.3
+        ],
+        [
+          "XIV",
+          2630.0,
+          2919.99,
+          11397.0,
+          12652.99,
+          149.9,
+          299.8,
+          22.49
+        ],
+        [
+          "XV",
+          2920.0,
+          3137.99,
+          12653.0,
+          13599.99,
+          163.6,
+          327.2,
+          24.55
+        ],
+        [
+          "XVI",
+          3138.0,
+          null,
+          13600.0,
+          null,
+          169.5,
+          339.0,
+          25.43
+        ]
+      ]
+    },
+    {
+      "name": "NIS WEEKLY boundary 200",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "I",
+      "actual": "I"
+    },
+    {
+      "name": "NIS WEEKLY boundary 339.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "I",
+      "actual": "I"
+    },
+    {
+      "name": "NIS MONTHLY boundary 867",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "I",
+      "actual": "I"
+    },
+    {
+      "name": "NIS MONTHLY boundary 1472.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "I",
+      "actual": "I"
+    },
+    {
+      "name": "NIS WEEKLY boundary 340",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "II",
+      "actual": "II"
+    },
+    {
+      "name": "NIS WEEKLY boundary 449.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "II",
+      "actual": "II"
+    },
+    {
+      "name": "NIS MONTHLY boundary 1473",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "II",
+      "actual": "II"
+    },
+    {
+      "name": "NIS MONTHLY boundary 1949.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "II",
+      "actual": "II"
+    },
+    {
+      "name": "NIS WEEKLY boundary 450",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "III",
+      "actual": "III"
+    },
+    {
+      "name": "NIS WEEKLY boundary 609.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "III",
+      "actual": "III"
+    },
+    {
+      "name": "NIS MONTHLY boundary 1950",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "III",
+      "actual": "III"
+    },
+    {
+      "name": "NIS MONTHLY boundary 2642.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "III",
+      "actual": "III"
+    },
+    {
+      "name": "NIS WEEKLY boundary 610",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "IV",
+      "actual": "IV"
+    },
+    {
+      "name": "NIS WEEKLY boundary 759.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "IV",
+      "actual": "IV"
+    },
+    {
+      "name": "NIS MONTHLY boundary 2643",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "IV",
+      "actual": "IV"
+    },
+    {
+      "name": "NIS MONTHLY boundary 3292.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "IV",
+      "actual": "IV"
+    },
+    {
+      "name": "NIS WEEKLY boundary 760",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "V",
+      "actual": "V"
+    },
+    {
+      "name": "NIS WEEKLY boundary 929.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "V",
+      "actual": "V"
+    },
+    {
+      "name": "NIS MONTHLY boundary 3293",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "V",
+      "actual": "V"
+    },
+    {
+      "name": "NIS MONTHLY boundary 4029.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "V",
+      "actual": "V"
+    },
+    {
+      "name": "NIS WEEKLY boundary 930",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VI",
+      "actual": "VI"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1119.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VI",
+      "actual": "VI"
+    },
+    {
+      "name": "NIS MONTHLY boundary 4030",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VI",
+      "actual": "VI"
+    },
+    {
+      "name": "NIS MONTHLY boundary 4852.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VI",
+      "actual": "VI"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1120",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VII",
+      "actual": "VII"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1299.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VII",
+      "actual": "VII"
+    },
+    {
+      "name": "NIS MONTHLY boundary 4853",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VII",
+      "actual": "VII"
+    },
+    {
+      "name": "NIS MONTHLY boundary 5632.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VII",
+      "actual": "VII"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1300",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VIII",
+      "actual": "VIII"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1489.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VIII",
+      "actual": "VIII"
+    },
+    {
+      "name": "NIS MONTHLY boundary 5633",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VIII",
+      "actual": "VIII"
+    },
+    {
+      "name": "NIS MONTHLY boundary 6456.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "VIII",
+      "actual": "VIII"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1490",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "IX",
+      "actual": "IX"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1709.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "IX",
+      "actual": "IX"
+    },
+    {
+      "name": "NIS MONTHLY boundary 6457",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "IX",
+      "actual": "IX"
+    },
+    {
+      "name": "NIS MONTHLY boundary 7409.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "IX",
+      "actual": "IX"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1710",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "X",
+      "actual": "X"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1909.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "X",
+      "actual": "X"
+    },
+    {
+      "name": "NIS MONTHLY boundary 7410",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "X",
+      "actual": "X"
+    },
+    {
+      "name": "NIS MONTHLY boundary 8276.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "X",
+      "actual": "X"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1910",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XI",
+      "actual": "XI"
+    },
+    {
+      "name": "NIS WEEKLY boundary 2139.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XI",
+      "actual": "XI"
+    },
+    {
+      "name": "NIS MONTHLY boundary 8277",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XI",
+      "actual": "XI"
+    },
+    {
+      "name": "NIS MONTHLY boundary 9272.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XI",
+      "actual": "XI"
+    },
+    {
+      "name": "NIS WEEKLY boundary 2140",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XII",
+      "actual": "XII"
+    },
+    {
+      "name": "NIS WEEKLY boundary 2379.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XII",
+      "actual": "XII"
+    },
+    {
+      "name": "NIS MONTHLY boundary 9273",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XII",
+      "actual": "XII"
+    },
+    {
+      "name": "NIS MONTHLY boundary 10312.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XII",
+      "actual": "XII"
+    },
+    {
+      "name": "NIS WEEKLY boundary 2380",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XIII",
+      "actual": "XIII"
+    },
+    {
+      "name": "NIS WEEKLY boundary 2629.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XIII",
+      "actual": "XIII"
+    },
+    {
+      "name": "NIS MONTHLY boundary 10313",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XIII",
+      "actual": "XIII"
+    },
+    {
+      "name": "NIS MONTHLY boundary 11396.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XIII",
+      "actual": "XIII"
+    },
+    {
+      "name": "NIS WEEKLY boundary 2630",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XIV",
+      "actual": "XIV"
+    },
+    {
+      "name": "NIS WEEKLY boundary 2919.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XIV",
+      "actual": "XIV"
+    },
+    {
+      "name": "NIS MONTHLY boundary 11397",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XIV",
+      "actual": "XIV"
+    },
+    {
+      "name": "NIS MONTHLY boundary 12652.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XIV",
+      "actual": "XIV"
+    },
+    {
+      "name": "NIS WEEKLY boundary 2920",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XV",
+      "actual": "XV"
+    },
+    {
+      "name": "NIS WEEKLY boundary 3137.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XV",
+      "actual": "XV"
+    },
+    {
+      "name": "NIS MONTHLY boundary 12653",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XV",
+      "actual": "XV"
+    },
+    {
+      "name": "NIS MONTHLY boundary 13599.99",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XV",
+      "actual": "XV"
+    },
+    {
+      "name": "NIS WEEKLY boundary 3138",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XVI",
+      "actual": "XVI"
+    },
+    {
+      "name": "NIS WEEKLY boundary 1000000",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XVI",
+      "actual": "XVI"
+    },
+    {
+      "name": "NIS MONTHLY boundary 13600",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XVI",
+      "actual": "XVI"
+    },
+    {
+      "name": "NIS MONTHLY boundary 1000000",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": "XVI",
+      "actual": "XVI"
+    },
+    {
+      "name": "Fortnightly 679.99 has a valid NIS class",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "9500 monthly 4 Mondays",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": [
+        488,
+        976,
+        33
+      ],
+      "actual": [
+        488.0,
+        976.0,
+        33.0
+      ]
+    },
+    {
+      "name": "9500 monthly 5 Mondays",
+      "group": "NIS",
+      "status": "PASS",
+      "expected": [
+        610,
+        1220,
+        41.25
+      ],
+      "actual": [
+        610.0,
+        1220.0,
+        41.25
+      ]
+    },
+    {
+      "name": "TT Paysheet MONTHLY 5000: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 5000: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 261.2,
+      "actual": 261.2
+    },
+    {
+      "name": "TT Paysheet MONTHLY 5000: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 33,
+      "actual": 33.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 5000: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 4705.8,
+      "actual": 4705.8
+    },
+    {
+      "name": "TT Paysheet MONTHLY 7500: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 7500: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 390.8,
+      "actual": 390.8
+    },
+    {
+      "name": "TT Paysheet MONTHLY 7500: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 33,
+      "actual": 33.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 7500: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 7076.2,
+      "actual": 7076.2
+    },
+    {
+      "name": "TT Paysheet MONTHLY 9500: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 407.48,
+      "actual": 407.48
+    },
+    {
+      "name": "TT Paysheet MONTHLY 9500: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 488,
+      "actual": 488.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 9500: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 33,
+      "actual": 33.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 9500: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 8571.52,
+      "actual": 8571.52
+    },
+    {
+      "name": "TT Paysheet MONTHLY 12000: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 1011.33,
+      "actual": 1011.33
+    },
+    {
+      "name": "TT Paysheet MONTHLY 12000: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 599.6,
+      "actual": 599.6
+    },
+    {
+      "name": "TT Paysheet MONTHLY 12000: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 33,
+      "actual": 33.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 12000: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 10356.07,
+      "actual": 10356.07
+    },
+    {
+      "name": "TT Paysheet MONTHLY 15000: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 1746.46,
+      "actual": 1746.46
+    },
+    {
+      "name": "TT Paysheet MONTHLY 15000: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 678,
+      "actual": 678.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 15000: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 33,
+      "actual": 33.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 15000: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 12542.54,
+      "actual": 12542.54
+    },
+    {
+      "name": "TT Paysheet MONTHLY 100000: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 23429.09,
+      "actual": 23429.09
+    },
+    {
+      "name": "TT Paysheet MONTHLY 100000: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 678,
+      "actual": 678.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 100000: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 33,
+      "actual": 33.0
+    },
+    {
+      "name": "TT Paysheet MONTHLY 100000: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 75859.91,
+      "actual": 75859.91
+    },
+    {
+      "name": "TT Paysheet WEEKLY 109: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "TT Paysheet WEEKLY 109: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "TT Paysheet WEEKLY 109: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 4.8,
+      "actual": 4.8
+    },
+    {
+      "name": "TT Paysheet WEEKLY 109: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 104.2,
+      "actual": 104.2
+    },
+    {
+      "name": "TT Paysheet WEEKLY 110: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "TT Paysheet WEEKLY 110: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "TT Paysheet WEEKLY 110: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 8.25,
+      "actual": 8.25
+    },
+    {
+      "name": "TT Paysheet WEEKLY 110: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 101.75,
+      "actual": 101.75
+    },
+    {
+      "name": "TT Paysheet WEEKLY 200: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "TT Paysheet WEEKLY 200: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 14.6,
+      "actual": 14.6
+    },
+    {
+      "name": "TT Paysheet WEEKLY 200: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 8.25,
+      "actual": 8.25
+    },
+    {
+      "name": "TT Paysheet WEEKLY 200: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 177.15,
+      "actual": 177.15
+    },
+    {
+      "name": "TT Paysheet WEEKLY 2000: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 48.16,
+      "actual": 48.16
+    },
+    {
+      "name": "TT Paysheet WEEKLY 2000: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 109.4,
+      "actual": 109.4
+    },
+    {
+      "name": "TT Paysheet WEEKLY 2000: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 8.25,
+      "actual": 8.25
+    },
+    {
+      "name": "TT Paysheet WEEKLY 2000: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 1834.19,
+      "actual": 1834.19
+    },
+    {
+      "name": "TT Paysheet WEEKLY 4000: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 537.65,
+      "actual": 537.65
+    },
+    {
+      "name": "TT Paysheet WEEKLY 4000: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 169.5,
+      "actual": 169.5
+    },
+    {
+      "name": "TT Paysheet WEEKLY 4000: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 8.25,
+      "actual": 8.25
+    },
+    {
+      "name": "TT Paysheet WEEKLY 4000: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 3284.6,
+      "actual": 3284.6
+    },
+    {
+      "name": "TT Paysheet WEEKLY 30000: paye",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 7483.64,
+      "actual": 7483.64
+    },
+    {
+      "name": "TT Paysheet WEEKLY 30000: employee_nis",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 169.5,
+      "actual": 169.5
+    },
+    {
+      "name": "TT Paysheet WEEKLY 30000: health_surcharge",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 8.25,
+      "actual": 8.25
+    },
+    {
+      "name": "TT Paysheet WEEKLY 30000: net",
+      "group": "calculator",
+      "status": "PASS",
+      "expected": 22338.61,
+      "actual": 22338.61
+    },
+    {
+      "name": "Health Surcharge boundary MONTHLY 0",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "Health Surcharge boundary MONTHLY 469.99",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 19.2,
+      "actual": 19.2
+    },
+    {
+      "name": "Health Surcharge boundary MONTHLY 470",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 33,
+      "actual": 33.0
+    },
+    {
+      "name": "Health Surcharge boundary WEEKLY 109",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 4.8,
+      "actual": 4.8
+    },
+    {
+      "name": "Health Surcharge boundary WEEKLY 109.01",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 8.25,
+      "actual": 8.25
+    },
+    {
+      "name": "Age boundary DOB 2010-02-01",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": [
+        0,
+        73.2,
+        0
+      ],
+      "actual": [
+        0.0,
+        73.2,
+        0.0
+      ]
+    },
+    {
+      "name": "Age boundary DOB 2010-01-31",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": [
+        488,
+        976,
+        33
+      ],
+      "actual": [
+        488.0,
+        976.0,
+        33.0
+      ]
+    },
+    {
+      "name": "Age boundary DOB 1966-01-31",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": [
+        488,
+        976,
+        0
+      ],
+      "actual": [
+        488.0,
+        976.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Age boundary DOB 1961-01-31",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": [
+        0,
+        73.2,
+        0
+      ],
+      "actual": [
+        0.0,
+        73.2,
+        0.0
+      ]
+    },
+    {
+      "name": "NIS exemption",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": [
+        0,
+        0
+      ],
+      "actual": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "PAYE exemption",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "Nonresident gets no personal allowance",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 2282.48,
+      "actual": 2282.48
+    },
+    {
+      "name": "Pension plus NIS annual relief capped at 60000",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 625,
+      "actual": 625.0
+    },
+    {
+      "name": "Tax credits floor PAYE at zero",
+      "group": "statutory",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "Salary 9500/160 payable 0",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "Salary 9500/160 payable 140",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 8312.5,
+      "actual": 8312.5
+    },
+    {
+      "name": "Salary 9500/160 payable 160",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 9500,
+      "actual": 9500.0
+    },
+    {
+      "name": "Salary 9500/160 payable 200",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 9500,
+      "actual": 9500.0
+    },
+    {
+      "name": "Salary 9500/160 payable -8",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "Salary 9500/160 payable 1",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 59.38,
+      "actual": 59.38
+    },
+    {
+      "name": "Hourly 50 payable 0",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "Hourly 50 payable 140",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 7000,
+      "actual": 7000.0
+    },
+    {
+      "name": "Hourly 50 payable 180",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 9000,
+      "actual": 9000.0
+    },
+    {
+      "name": "Hourly 50 payable -8",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 0,
+      "actual": 0.0
+    },
+    {
+      "name": "MONTHLY expected hours",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 160,
+      "actual": 160.0
+    },
+    {
+      "name": "MONTHLY salary conversion",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 9500.0,
+      "actual": 9500.0
+    },
+    {
+      "name": "WEEKLY expected hours",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 40,
+      "actual": 40.0
+    },
+    {
+      "name": "WEEKLY salary conversion",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 2192.31,
+      "actual": 2192.31
+    },
+    {
+      "name": "FORTNIGHTLY expected hours",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 80,
+      "actual": 80.0
+    },
+    {
+      "name": "FORTNIGHTLY salary conversion",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 4384.62,
+      "actual": 4384.62
+    },
+    {
+      "name": "SEMI_MONTHLY expected hours",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 80,
+      "actual": 80.0
+    },
+    {
+      "name": "SEMI_MONTHLY salary conversion",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 4750.0,
+      "actual": 4750.0
+    },
+    {
+      "name": "Item amount: manual",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 900,
+      "actual": 900
+    },
+    {
+      "name": "Item amount: hours",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 600,
+      "actual": 600.0
+    },
+    {
+      "name": "Item amount: fixed",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "Item amount: percentage",
+      "group": "wages",
+      "status": "PASS",
+      "expected": 475,
+      "actual": 475.0
+    },
+    {
+      "name": "Paid leave adds 8 to 132 attendance hours",
+      "group": "attendance",
+      "status": "PASS",
+      "expected": [
+        140,
+        20,
+        20
+      ],
+      "actual": [
+        140,
+        20,
+        20
+      ]
+    },
+    {
+      "name": "Unpaid leave explained shortage is not deducted twice",
+      "group": "attendance",
+      "status": "PASS",
+      "expected": [
+        152,
+        0,
+        8
+      ],
+      "actual": [
+        152,
+        0.0,
+        8.0
+      ]
+    },
+    {
+      "name": "Manual negative hours cannot make negative payable",
+      "group": "attendance",
+      "status": "PASS",
+      "expected": [
+        0,
+        160,
+        160
+      ],
+      "actual": [
+        0.0,
+        160.0,
+        160.0
+      ]
+    },
+    {
+      "name": "Salary payable capped at expected hours",
+      "group": "attendance",
+      "status": "PASS",
+      "expected": [
+        160,
+        0,
+        0
+      ],
+      "actual": [
+        160,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Hourly payable not capped",
+      "group": "attendance",
+      "status": "PASS",
+      "expected": [
+        180,
+        0,
+        0
+      ],
+      "actual": [
+        180,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Completed attendance overlap only",
+      "group": "attendance",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4.0
+    },
+    {
+      "name": "Approved paid leave",
+      "group": "leave",
+      "status": "PASS",
+      "expected": [
+        8,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual": [
+        8.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Approved unpaid leave",
+      "group": "leave",
+      "status": "PASS",
+      "expected": [
+        0,
+        8,
+        0,
+        0,
+        0
+      ],
+      "actual": [
+        0.0,
+        8.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Pending leave not paid",
+      "group": "leave",
+      "status": "PASS",
+      "expected": [
+        0,
+        0,
+        8,
+        0,
+        0
+      ],
+      "actual": [
+        0.0,
+        0.0,
+        8.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Partially approved leave not paid",
+      "group": "leave",
+      "status": "PASS",
+      "expected": [
+        0,
+        0,
+        8,
+        0,
+        0
+      ],
+      "actual": [
+        0.0,
+        0.0,
+        8.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Paid leave attendance overlap removed",
+      "group": "leave",
+      "status": "PASS",
+      "expected": [
+        4,
+        0,
+        0,
+        4,
+        0
+      ],
+      "actual": [
+        4.0,
+        0.0,
+        0.0,
+        4.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Unpaid attendance overlap identified",
+      "group": "leave",
+      "status": "PASS",
+      "expected": [
+        0,
+        8,
+        0,
+        4,
+        4
+      ],
+      "actual": [
+        0.0,
+        8.0,
+        0.0,
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "name": "Public holiday not also counted as paid leave",
+      "group": "leave",
+      "status": "PASS",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "actual": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Addition taxable by default",
+      "group": "totals",
+      "status": "PASS",
+      "expected": [
+        9750,
+        9750,
+        488,
+        33
+      ],
+      "actual": [
+        9750,
+        9750,
+        488.0,
+        33.0
+      ]
+    },
+    {
+      "name": "PAYE exclusion leaves gross/NIS/HS intact",
+      "group": "totals",
+      "status": "PASS",
+      "expected": [
+        9750,
+        9500,
+        488,
+        33
+      ],
+      "actual": [
+        9750,
+        9500,
+        488.0,
+        33.0
+      ]
+    },
+    {
+      "name": "Run totals exclude held/excluded",
+      "group": "totals",
+      "status": "PASS",
+      "expected": [
+        3,
+        1,
+        9500,
+        8564.4,
+        976
+      ],
+      "actual": [
+        3,
+        1,
+        9500,
+        8564.4,
+        976
+      ]
+    },
+    {
+      "name": "2026-01 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "2026-02 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "2026-03 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "name": "2026-04 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "2026-05 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "2026-06 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "name": "2026-07 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "2026-08 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "name": "2026-09 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "2026-10 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "2026-11 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "name": "2026-12 contribution Mondays",
+      "group": "calendar",
+      "status": "PASS",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "Normal employee edit blocked: approved",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Normal item edit blocked: approved",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Normal employee edit blocked: paid",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Normal item edit blocked: paid",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Normal employee edit blocked: cancelled",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Normal item edit blocked: cancelled",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Hours direct edit without wizard blocked",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Forged internal context must not bypass hours audit",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Forged locked-write context must not alter paid line",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Parent lock blocks approved",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Parent lock blocks payment date edit approved",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Parent lock blocks paid",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Parent lock blocks payment date edit paid",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Parent lock blocks cancelled",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Parent lock blocks payment date edit cancelled",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Direct run write rejected {'state': 'approved'}",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Direct run write rejected {'gross_pay': 1}",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Direct run write rejected {'net_pay': 1}",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "History immutable write",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "History immutable unlink",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Direct employee write rejected {'payable_hours': 100}",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Direct employee write rejected {'locked_summary': {}}",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Direct employee write rejected {'review_state': 'reviewed'}",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Direct employee write rejected {'employee_id': 99}",
+      "group": "protection",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Item create triggers statutory refresh",
+      "group": "wiring",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Item write triggers statutory refresh",
+      "group": "wiring",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Item unlink triggers statutory refresh",
+      "group": "wiring",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "TD1 unconfirmed deduction must not reduce PAYE",
+      "group": "TD1",
+      "status": "PASS",
+      "expected": 407.48,
+      "actual": 407.48
+    },
+    {
+      "name": "Expired TD1 deduction must not reduce PAYE",
+      "group": "TD1",
+      "status": "PASS",
+      "expected": 407.48,
+      "actual": 407.48
+    },
+    {
+      "name": "Statutory YTD excludes held/excluded historical employees",
+      "group": "YTD",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "name": "Completed payslip reads saved YTD",
+      "group": "YTD",
+      "status": "PASS",
+      "expected": true,
+      "actual": true
+    }
+  ],
+  "source_hashes": {
+    "__init__.py": "ba6abc2918479d1a15575f710b37c153287cb0b8e75c36f74b4f2149d5bb9b4e",
+    "__manifest__.py": "de2b7ac2bcbd92c6d0462f5ea5a755a3d03237673d1fd1c5ec1446e56b6316c0",
+    "migrations/19.0.1.3.0/post-migration.py": "681d7df2ef1aa04554171723ea1ababc9fc919001845cce62e8fc95013f752b9",
+    "migrations/19.0.1.3.1/post-migration.py": "7a052fe6c7167b19190e43bcb2df85b9005fcaa1d67561d2490355162ae44450",
+    "migrations/19.0.1.3.2/post-migration.py": "08acf555436fd3348bde192203b11664ada5bffb66eb2db49089f11cabc845eb",
+    "migrations/19.0.1.4.0/post-migration.py": "5fe258f1e1ff3b840bfbce7c096948472dcf4a80400436965e1238f04ecaf91c",
+    "migrations/19.0.1.4.1/post-migration.py": "9a54f70709afa26977d49d0804440a1e094bde4251007cee9d2a81465c2fb577",
+    "migrations/19.0.1.4.2/post-migration.py": "1eb60780277d885dc38c3c0f355432a5e9ea7a79cab40df5824599e5d6e6463c",
+    "migrations/19.0.1.4.3/post-migration.py": "4b8ebdc70909ed91b8fde6360b723986f6ce0a1e27371517b7c94971cb920f3f",
+    "migrations/19.0.1.5.0/post-migration.py": "a8b192667ff86a4d597f4f50a29bef3106d3e733e9736c83d0c9f3c8b479a969",
+    "migrations/19.0.1.6.0/post-migration.py": "21de0a662991cbb5fe2f2e4c9d7dea8db5c0756c69effa2bf8f515d127742eae",
+    "migrations/19.0.1.8.6/post-migration.py": "664db5cd5a66b5ce798b16a4f8e0790d48c8950eab49da518e128735c72299b5",
+    "migrations/19.0.1.8.6/pre-migration.py": "76491da589b23e09b7de741e4b5dcda368b3c7665d6ce9613c917a6e65df576b",
+    "models/__init__.py": "4acca628b65db417a6c63a0fa7e70aa19ebe256b677fa33de412d1c388ee87d5",
+    "models/calculation_math.py": "61e97e85454ba0239e0c99dcf60b42dc5d5f7fc0305f30d71d200b39697ac9a2",
+    "models/calculation_security.py": "529a7213b28f68ac26e50746e5a296e825d80fe6a4aacf1967f963d053b99751",
+    "models/employee_pay_item.py": "20cc5d529b41269776d336d70ca9abce0130a195c9226a3dc0db644daa6284e1",
+    "models/employee_statutory_profile.py": "4168b2d1e8f0de6654ef0a38e19287c5353b8640af2b7c142d2ad051e24749f7",
+    "models/hours_adjustment.py": "4165edfd83c56e6a41dfb3cded13bb741fa69e03e6c8d26769fdffb455439210",
+    "models/hr_employee.py": "7752ac63ab3ff804f962c0c0745f1e2976127a3d15876b2bbf1eb6a20772f51e",
+    "models/pay_frequency.py": "0e4aba87cffe0bc759d16ca3b0c21b037263dd44d6fff3da24e25deb9bca9a49",
+    "models/pay_item.py": "8bd97f0199cfb9adbbca6b2741f6323051ed78b1e33cd6e4868137f9d6d9d8d3",
+    "models/payroll_dashboard.py": "e0b354f9545aa7a3fe2ec891bcf85bad7d82edd816a87102925301a12103b083",
+    "models/payroll_group.py": "b033d6642abc96a92d9c24983171983ff450929bb65bca455855704c906b6b5e",
+    "models/payroll_integrity.py": "0cd2a6f7ec6ff830fda3cde7fb965963facd3a1ccd4e89aaed7096955fa2ec9a",
+    "models/payroll_run.py": "e710e9e9765504a1cf2361545c1dc002e192d4b325bc915bdadab26a72961f9d",
+    "models/payroll_run_employee.py": "90b886d1849aa443d952e3cc81c70b9a5696ced75d3384a2a64729d4ceb5f9e4",
+    "models/payroll_run_item.py": "b7a95feca320118d81cdfa14e65c5447aa07d1519a76f3cee0cf0cbe87296386",
+    "models/res_company.py": "39ee980c6703ee247e8c6c2b5e137c8108903285cc3dc9c85afedf194049b532",
+    "models/res_config_settings.py": "03ead0f47a6e4fad41754bd15e93223347b259df18b2b7e31aeeae7cefc5e1d8",
+    "models/time_off_snapshot.py": "e4aabe5c084caf24af9770fa771c69874913d83f975e09b61242e2caf1294e03",
+    "tests/__init__.py": "31462c3cdc28b43a386c27de3333fda44cb7bcf630a3deba9797f40ae020aebe",
+    "tests/test_calculation_fixes.py": "97f24aa5f78870ca6aebd11a49083ff9680c2fe0328c813c1f1db5b3d5c6e0ce",
+    "tests/test_payroll_foundation.py": "4b1ee2daec293bf92cb97b2a82455ee4186cb0506951936f4add1ea51b6f0a48",
+    "tests/test_payroll_run.py": "a787fd2aa0042101ac674bf824b35fc4d1d549f08fa21bca9dce329dacb8c3a7",
+    "wizard/__init__.py": "d9d0f3881cb61be63331c4f46f0710cb50e07aef7f6b27e922964aadcf95f8a2",
+    "wizard/payroll_attention.py": "98c600441c9d5bd75d1cd5070aedfbe475547e457734a13fead628903cb5c25e",
+    "wizard/payroll_dashboard_selector.py": "3896a4bb0b2796615a481f7de82a37e29467bfe355c9de013c489a7bbfc92c57",
+    "wizard/payroll_hours_adjustment.py": "63ac20f0a5ff779e802cf3aa9f2945a26cc20c25adcaad2e199c86d7fe9e401d",
+    "wizard/payroll_readiness.py": "be00d1153f5131756f43d76cc4c9cf243219c8e96e1cafd4411b43262e899628"
+  }
+}

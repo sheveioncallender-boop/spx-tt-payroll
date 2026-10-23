@@ -437,6 +437,7 @@
                                     <field name="percentage" optional="hide"/>
                                     <field name="manual_amount" optional="show"/>
                                     <field name="amount" widget="monetary" readonly="1" sum="Total Additions"/>
+                                    <field name="one_off" optional="hide"/>
                                     <field name="exclude_from_paye" string="Exclude from PAYE" optional="show"/>
                                     <field name="source" optional="hide"/>
                                     <field name="note" optional="hide"/>

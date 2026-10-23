@@ -232,14 +232,14 @@
                                                 <img t-att-src="image_data_uri(doc.company_id.logo)" class="tt-brand-logo"/>
                                             </td>
                                             <td style="vertical-align: top;">
-                                                <div class="tt-company-name" t-field="doc.company_id.name"/>
+                                                <div class="tt-company-name" t-esc="payload['identity']['company']"/>
                                                 <div class="tt-employee-name">
                                                     <span t-if="doc.employee_number" t-esc="doc.employee_number"/>
                                                     <span t-if="doc.employee_number"> - </span>
-                                                    <span t-field="doc.employee_id.name"/>
+                                                    <span t-esc="payload['identity']['employee']"/>
                                                 </div>
                                                 <div class="tt-muted" t-if="doc.job_title" t-esc="doc.job_title"/>
-                                                <div class="tt-muted" t-if="doc.department_id" t-field="doc.department_id.name"/>
+                                                <div class="tt-muted" t-if="doc.department_id" t-esc="payload['identity']['department']"/>
                                             </td>
                                         </tr>
                                     </table>

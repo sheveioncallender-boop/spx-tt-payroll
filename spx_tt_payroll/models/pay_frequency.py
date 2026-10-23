@@ -14,13 +14,7 @@ class TTPayFrequency(models.Model):
     active = fields.Boolean(default=True)
     description = fields.Text()
 
-    _sql_constraints = [
-        (
-            "spx_tt_pay_frequency_code_unique",
-            "unique(code)",
-            "The pay frequency code must be unique.",
-        )
-    ]
+    _spx_tt_pay_frequency_code_unique = models.Constraint('unique(code)', 'The pay frequency code must be unique.')
 
     @api.constrains("periods_per_year")
     def _check_periods_per_year(self):
