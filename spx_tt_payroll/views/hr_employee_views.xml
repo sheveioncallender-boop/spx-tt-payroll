@@ -89,7 +89,7 @@
                         </div>
                     </div>
 
-                    <div class="o_tt_payroll_summary_grid" invisible="tt_payroll_status == 'excluded'">
+                    <div class="o_tt_payroll_summary_grid" groups="spx_tt_payroll.group_tt_payroll_user" invisible="tt_payroll_status == 'excluded'">
                         <div class="o_tt_payroll_summary_card">
                             <span class="o_tt_payroll_caption">Base Pay</span>
                             <div class="o_tt_payroll_summary_value">
