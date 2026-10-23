@@ -19,6 +19,8 @@ jobs:
         options: --health-cmd "pg_isready -U odoo" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Test annual tax projection
         run: python3 -m unittest discover -s checks -p 'test_projection.py' -v
       - name: Install and test on Odoo 19 Community
@@ -34,8 +36,27 @@ jobs:
             --test-tags /spx_tt_payroll --stop-after-init --http-port=8079 \
             2>&1 | tee test-results/community.log
           ! grep -Eq '([1-9][0-9]* failed|[1-9][0-9]* error\(s\)|FAIL:|ERROR:.*test_)' test-results/community.log
+      - name: Upgrade v1.8.5 and preserve paid payroll
+        run: |
+          set -o pipefail
+          mkdir -p /tmp/tt-payroll-baseline
+          git archive ec72f80988a67da7e61eddcb57d52da49c2ce371 spx_tt_payroll | tar -x -C /tmp/tt-payroll-baseline
+          odoo_run() {
+            docker run --rm -i --network host \
+              -e HOST=127.0.0.1 -e PORT=5432 -e USER=odoo -e PASSWORD=odoo \
+              -e TT_UPGRADE_STAGE="$1" \
+              -v "$2:/mnt/extra-addons:ro" -v "$PWD/checks:/mnt/validation:ro" \
+              -v tt-payroll-upgrade-data:/var/lib/odoo \
+              odoo:19.0 "${@:3}"
+          }
+          odoo_run before /tmp/tt-payroll-baseline odoo -d tt_payroll_upgrade -i spx_tt_payroll --without-demo=all --stop-after-init 2>&1 | tee test-results/upgrade-install.log
+          odoo_run before /tmp/tt-payroll-baseline odoo shell -d tt_payroll_upgrade --no-http < checks/upgrade_fixture.py 2>&1 | tee test-results/upgrade-before.log
+          grep -q UPGRADE_FIXTURE_CREATED test-results/upgrade-before.log
+          odoo_run after "$PWD" odoo -d tt_payroll_upgrade -u spx_tt_payroll --stop-after-init 2>&1 | tee test-results/upgrade.log
+          odoo_run after "$PWD" odoo shell -d tt_payroll_upgrade --no-http < checks/upgrade_fixture.py 2>&1 | tee test-results/upgrade-after.log
+          grep -q UPGRADE_HISTORY_PRESERVED test-results/upgrade-after.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: odoo19-community-test-log
-          path: test-results/community.log
+          path: test-results/*.log

@@ -379,6 +379,8 @@ class TestTTPayrollRun(TransactionCase):
         self.assertAlmostEqual(payload["summary"]["ytd"]["gross"], 9750.0, places=2)
 
     def test_payslip_actions_are_available(self):
+        # A new company normally opens Odoo's document layout setup first.
+        self.env.company.external_report_layout_id = self.env.ref("web.external_layout_standard")
         run = self._new_run()
         line = run.employee_line_ids.filtered(
             lambda record: record.employee_id == self.employee

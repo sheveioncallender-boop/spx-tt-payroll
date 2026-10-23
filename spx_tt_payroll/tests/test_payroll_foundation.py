@@ -49,6 +49,13 @@ class TestTTPayrollFoundation(TransactionCase):
             [("tt_payroll_readiness_state", "=", "incomplete")]
         )
         self.assertIn(self.employee, found)
+        excluded = self.env["hr.employee"].search([("tt_payroll_readiness_state", "not in", ["incomplete"])])
+        self.assertNotIn(self.employee, excluded)
+        self.employee.tt_pay_type = "monthly"
+        salaried = self.env["hr.employee"].search([("tt_pay_basis", "in", ["salary"])])
+        self.assertIn(self.employee, salaried)
+        hourly = self.env["hr.employee"].search([("tt_pay_basis", "=", "hourly")])
+        self.assertNotIn(self.employee, hourly)
 
     def test_excluded_status_is_only_used_when_employee_is_excluded(self):
         self.employee.tt_payroll_status = "excluded"

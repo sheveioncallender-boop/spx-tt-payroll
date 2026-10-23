@@ -337,7 +337,7 @@ class HREmployee(models.Model):
             raise ValidationError(
                 "Pay Basis only supports equals, not equals, in, and not in filters."
             )
-        values = value if isinstance(value, (list, tuple, set)) else [value]
+        values = value if operator in ("in", "not in") else [value]
         mapped = set()
         for item in values:
             if item == "salary":
@@ -449,7 +449,7 @@ class HREmployee(models.Model):
                 "Setup Status only supports equals, not equals, in, and not in filters."
             )
 
-        wanted = value if isinstance(value, (list, tuple, set)) else [value]
+        wanted = value if operator in ("in", "not in") else [value]
         wanted = set(wanted)
         employees = self.search([])
 

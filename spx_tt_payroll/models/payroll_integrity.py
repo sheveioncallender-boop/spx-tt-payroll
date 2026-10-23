@@ -398,7 +398,8 @@ class PayrollItemDefinitionIntegrity(models.Model):
 
     def write(self, vals):
         if "code" in vals:
-            items = self.env["spx.tt.payroll.run.item"].sudo().search([("pay_item_id", "in", self.ids)])
+            changed = self.filtered(lambda item: item.code != vals["code"])
+            items = self.env["spx.tt.payroll.run.item"].sudo().search([("pay_item_id", "in", changed.ids)])
             items.run_id._assert_open()
             items.run_employee_id._invalidate_review()
         return super().write(vals)

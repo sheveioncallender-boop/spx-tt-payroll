@@ -1,7 +1,7 @@
 """Run on an Odoo 19 test database; all records are transaction-isolated."""
 from odoo.tests import tagged
-from odoo.tests.common import TransactionCase
-from odoo.exceptions import UserError
+from odoo.tests.common import TransactionCase, new_test_user
+from odoo.exceptions import AccessError, UserError
 
 
 @tagged("post_install", "-at_install")
@@ -127,6 +127,10 @@ class TestCalculationFixes(TransactionCase):
         run, line = self.full_pay()
         run.with_user(self.manager).action_approve()
         saved = line._payslip_summary_values()
+        wage_item = line.item_line_ids.filtered(lambda item: item.source == "salary").pay_item_id
+        wage_item.write({"code": wage_item.code})  # XML reload on module upgrade
+        with self.assertRaises(UserError):
+            wage_item.write({"code": "RENAMED_WAGE"})
         self.env["spx.tt.employee.statutory.profile"].create({"employee_id": self.employee.id,
             "opening_ytd_year": 2026, "opening_net": 50000})
         self.employee.name = "Changed after approval"
@@ -151,6 +155,41 @@ class TestCalculationFixes(TransactionCase):
             line.with_context(tt_payroll_internal_write=True).write({"attendance_adjustment_hours": 8})
         with self.assertRaises(UserError):
             line.write({"payable_hours": 160})
+
+    def test_forged_creation_defaults_do_not_become_pay(self):
+        run, line = self.new_run()
+        other = self.employee.copy({"name": "Default injection test"})
+        created = self.env["spx.tt.payroll.run.employee"].with_context(
+            default_run_id=run.id, default_employee_id=other.id,
+            default_payable_hours=999, default_salary_amount=999999,
+            default_attendance_adjustment_hours=999,
+        ).create({})
+        self.assertEqual(created.employee_id, other)
+        self.assertEqual(created.attendance_adjustment_hours, 0)
+        self.assertEqual(created.payable_hours, 0)
+        self.assertEqual(created.gross_pay, 0)
+
+    def test_payroll_officer_prepares_but_cannot_approve(self):
+        officer = new_test_user(self.env, login="tt_payroll_officer_ci",
+            groups="spx_tt_payroll.group_tt_payroll_officer",
+            company_id=self.env.company.id, company_ids=[(6, 0, self.env.company.ids)])
+        run = self.env["spx.tt.payroll.run"].with_user(officer).create({
+            "company_id": self.env.company.id, "pay_frequency_id": self.monthly.id,
+            "date_start": "2026-01-01", "date_end": "2026-01-31", "payment_date": "2026-01-31",
+        })
+        line = run.employee_line_ids.filtered(lambda row: row.employee_id == self.employee)
+        self.assertEqual(len(line), 1)
+        self.env["spx.tt.payroll.hours.adjustment.wizard"].with_user(officer).create({
+            "run_employee_id": line.id, "adjustment_hours": 160, "reason": "Officer reconciliation",
+        }).action_apply_adjustment()
+        line.action_confirm_attendance()
+        run.action_calculate()
+        self.assertAlmostEqual(line.paye_amount, 407.48, places=2)
+        with self.assertRaises(UserError):
+            run.action_approve()
+        self.assertTrue(run.change_ids)
+        with self.assertRaises((AccessError, UserError)):
+            run.change_ids[:1].write({"description": "Changed history"})
 
     def test_audited_short_hours_can_be_reviewed(self):
         run, line = self.new_run()
