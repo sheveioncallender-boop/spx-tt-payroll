@@ -1,4 +1,4 @@
-"""Read-only v1.8.6 audit. Runs actual addon method bodies with ORM boundary doubles.
+"""Read-only v1.8.7 audit. Runs actual addon method bodies with ORM boundary doubles.
 
 Usage: python checks/audit_calculations.py /path/to/addon [--odoo-source /path/to/odoo19]
 This is NOT an Odoo installation, transaction, ACL, UI or PDF integration test.
@@ -123,12 +123,14 @@ def make_line(gross=9500, cycle='MONTHLY', weeks=4, prof=None, **kw):
               payroll_year=2026)
     p = prof or profile()
     values = dict(id=1, run_id=run, run_state='draft', pay_frequency_id=NS(code=cycle),
-                  employee_id=NS(id=1,birthday=date(1990,1,1)), company_id=NS(id=1),
+                  employee_id=NS(id=1,birthday=date(1990,1,1),resource_calendar_id=True), company_id=NS(id=1),
                   nis_exempt=False, health_surcharge_exempt=False,
                   currency_id=NS(round=money), item_line_ids=Records([pay_item]+statutory),
                   _get_statutory_profile=lambda:p, pay_basis='salary', scheduled_hours=160,
                   period_salary=9500, payable_hours=160, hourly_rate=50,
                   normal_hours_per_week=40, regular_hours=160, paid_leave_hours=0,
+                  incomplete_attendance_count=0, pending_overtime_hours=0,
+                  pending_time_off_count=0, time_off_attendance_overlap_hours=0, attendance_record_count=1,
                   unpaid_leave_hours=0, public_holiday_hours=0, attendance_adjustment_hours=0,
                   env=NS(context={}), search=lambda domain:Records(),
                   review_state='pending', display_status='ready')
@@ -144,7 +146,7 @@ def calculate(line):
 
 # Static package checks; do not confuse schema validity with successful installation.
 manifest = ast.literal_eval((ROOT/'__manifest__.py').read_text())
-check('Baseline version', '19.0.1.8.6', lambda:manifest['version'], 'package')
+check('Baseline version', '19.0.1.8.7', lambda:manifest['version'], 'package')
 check('Accounting and Enterprise payroll remain optional', ['hr','hr_attendance','hr_holidays','mail'], lambda:manifest['depends'], 'package')
 for f in sorted(ROOT.rglob('*.py')):
     check(f'Python syntax: {f.relative_to(ROOT)}', True, lambda f=f: bool(compile(f.read_text(),str(f),'exec')), 'package')
@@ -237,7 +239,8 @@ check('Unpaid leave explained shortage is not deducted twice',(152,0,8),lambda:p
 check('Manual negative hours cannot make negative payable',(0,160,160),lambda:payable(regular_hours=4,attendance_adjustment_hours=-8),'attendance')
 check('Salary payable capped at expected hours',(160,0,0),lambda:payable(regular_hours=180),'attendance')
 check('Hourly payable not capped',(180,0,0),lambda:payable(pay_basis='hourly',regular_hours=180),'attendance')
-attendance=Records([NS(check_in=datetime(2026,1,5,8),check_out=datetime(2026,1,5,16)),
+attendance=Records([NS(check_in=datetime(2026,1,5,8),check_out=datetime(2026,1,5,16),
+                       _get_worked_hours_in_range=lambda start,end:(end-start).total_seconds()/3600),
                     NS(check_in=datetime(2026,1,6,8),check_out=False)])
 check('Completed attendance overlap only',4,lambda:make_line()._attendance_overlap_hours(attendance,datetime(2026,1,5,12),datetime(2026,1,5,20)),'attendance')
 

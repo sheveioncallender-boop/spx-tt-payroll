@@ -104,6 +104,91 @@ class TestCalculationFixes(TransactionCase):
         self.assertEqual(line.gross_pay, 0)
         self.assertEqual(line.time_off_snapshot_ids.payroll_treatment, "unpaid")
 
+    def _january_clockings(self):
+        self.employee.contract_date_start = "2026-01-01"
+        self.employee.resource_calendar_id.tz = "UTC"
+        self.employee.resource_id.tz = "UTC"
+        return self.env["hr.attendance"].create([
+            {"employee_id": self.employee.id, "check_in": f"2026-01-0{day} 08:00:00",
+             "check_out": f"2026-01-0{day} 17:00:00"} for day in (5, 6)
+        ])
+
+    def test_unpaid_leave_overlap_not_deducted_twice_or_paid_as_overtime(self):
+        clockings = self._january_clockings()
+        leave_type = self.env["hr.leave.type"].create({
+            "name": "QA overlap unpaid", "requires_allocation": False,
+            "leave_validation_type": "hr", "unpaid": True,
+        })
+        leave = self.env["hr.leave"].create({
+            "employee_id": self.employee.id, "holiday_status_id": leave_type.id,
+            "request_date_from": "2026-01-06", "request_date_to": "2026-01-06",
+        })
+        leave.action_approve()
+        before = clockings.read(["check_in", "check_out", "worked_hours", "overtime_hours"])
+        _, line = self.new_run()
+        self.assertAlmostEqual(line.actual_worked_hours, 16)
+        self.assertAlmostEqual(line.regular_hours, 8)
+        self.assertAlmostEqual(line.unpaid_leave_hours, 8)
+        self.assertAlmostEqual(line.overtime_hours, 0)
+        self.assertAlmostEqual(line.gross_pay, 475)
+        self.assertAlmostEqual(line.time_off_attendance_overlap_hours, 8)
+        self.assertEqual(clockings.read(["check_in", "check_out", "worked_hours", "overtime_hours"]), before)
+        with self.assertRaises(UserError):
+            line.action_mark_reviewed()
+
+    def test_overtime_clipped_per_clocking_and_refused_is_not_pending(self):
+        clockings = self._january_clockings()
+        overtime = self.env["hr.attendance.overtime.line"].create({
+            "employee_id": self.employee.id, "date": "2026-01-06",
+            "time_start": clockings[1].check_in, "time_stop": clockings[1].check_out,
+            "duration": 9, "status": "refused",
+        })
+        clockings.invalidate_recordset(["linked_overtime_ids", "overtime_hours", "validated_overtime_hours"])
+        _, line = self.new_run()
+        self.assertAlmostEqual(line.regular_hours, 8)
+        self.assertAlmostEqual(line.overtime_hours, 0)
+        self.assertAlmostEqual(line.pending_overtime_hours, 0)
+        overtime.status = "to_approve"
+        line.action_refresh_attendance()
+        self.assertAlmostEqual(line.pending_overtime_hours, 8)
+        overtime.action_approve()
+        line.action_refresh_attendance()
+        self.assertAlmostEqual(line.overtime_hours, 8)
+        self.assertAlmostEqual(line.pending_overtime_hours, 0)
+
+    def test_hours_adjustment_updates_shortage_message(self):
+        _, line = self.new_run()
+        self.env["spx.tt.payroll.hours.adjustment.wizard"].create({
+            "run_employee_id": line.id, "adjustment_hours": 140,
+            "reason": "QA reconciled hours",
+        }).action_apply_adjustment()
+        self.assertAlmostEqual(line.missing_hours, 20)
+        self.assertIn("20.00 expected hour", line.attendance_issue_summary)
+        self.assertNotIn("160.00 expected hour", line.attendance_issue_summary)
+
+    def test_attendance_shortcut_opens_native_period_list(self):
+        clockings = self._january_clockings()
+        _, line = self.new_run()
+        action = line.action_open_attendances()
+        self.assertEqual(action["res_model"], "hr.attendance")
+        self.assertEqual(action["views"][0][1], "list")
+        self.assertEqual(set(self.env["hr.attendance"].search(action["domain"]).ids), set(clockings.ids))
+        with self.assertRaises(UserError):
+            line.pay_frequency_id = self.env.ref("spx_tt_payroll.pay_frequency_weekly")
+
+    def test_payslip_keeps_utf8_and_batch_document_boundaries(self):
+        self.employee.name = "QA — José"
+        _, first = self.new_run()
+        _, second = self.new_run()
+        report = self.env.ref("spx_tt_payroll.action_report_tt_payroll_payslip_pdf")
+        html, _ = report._render_qweb_html(report, (first | second).ids)
+        bodies, ids, _, _, _ = report._prepare_html(html, report_model=first._name)
+        self.assertEqual(ids, (first | second).ids)
+        self.assertEqual(len(bodies), 2)
+        for body in bodies:
+            self.assertIn('charset="utf-8"', str(body).lower())
+            self.assertIn("QA — José", str(body))
+
     def test_first_pay_and_live_addition_recalculation(self):
         _, line = self.full_pay()
         self.assertAlmostEqual(line.paye_amount, 407.48, places=2)

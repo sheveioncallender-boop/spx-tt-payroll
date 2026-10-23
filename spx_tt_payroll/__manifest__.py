@@ -1,6 +1,6 @@
 {
     "name": "Trinidad & Tobago Payroll",
-    "version": "19.0.1.8.6",
+    "version": "19.0.1.8.7",
     "summary": "Attendance-first Trinidad & Tobago payroll with statutory calculations, employee processing, and professional payslips",
     "description": """
 Trinidad & Tobago Payroll provides a complete, easy-to-use payroll workspace

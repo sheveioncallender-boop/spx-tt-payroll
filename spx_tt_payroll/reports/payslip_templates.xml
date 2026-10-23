@@ -5,6 +5,7 @@
             <t t-foreach="docs" t-as="doc">
                 <t t-set="payload" t-value="doc._get_payslip_report_values()"/>
                 <t t-set="currency_symbol" t-value="doc.currency_id.symbol or 'TT$'"/>
+                <div class="article" t-att-data-oe-model="doc._name" t-att-data-oe-id="doc.id" t-att-data-oe-lang="doc.env.context.get('lang')">
                 <div class="page tt-payslip-page">
                     <style>
                         .tt-payslip-page {
@@ -408,6 +409,7 @@
                             </tr>
                         </table>
                     </div>
+                </div>
                 </div>
             </t>
         </t>

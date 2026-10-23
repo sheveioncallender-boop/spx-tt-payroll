@@ -383,13 +383,13 @@
                     <div class="o_tt_payroll_summary_grid o_tt_payroll_calculation_summary">
                         <div class="o_tt_payroll_summary_card">
                             <span class="o_tt_payroll_caption">Pay Basis</span>
-                            <div class="o_tt_payroll_summary_value"><field name="pay_basis"/></div>
-                            <small><field name="pay_frequency_id"/></small>
+                            <div class="o_tt_payroll_summary_value"><field name="pay_basis" readonly="1"/></div>
+                            <small><field name="pay_frequency_id" readonly="1"/></small>
                         </div>
                         <div class="o_tt_payroll_summary_card">
                             <span class="o_tt_payroll_caption">Payable Hours</span>
-                            <div class="o_tt_payroll_summary_value"><field name="payable_hours"/></div>
-                            <small><field name="scheduled_hours"/> expected</small>
+                            <div class="o_tt_payroll_summary_value"><field name="payable_hours" readonly="1"/></div>
+                            <small><field name="scheduled_hours" readonly="1"/> expected</small>
                         </div>
                         <div class="o_tt_payroll_summary_card">
                             <span class="o_tt_payroll_caption">Gross Pay</span>
@@ -445,7 +445,7 @@
                             </field>
                         </page>
                         <page string="Taxes" name="taxes">
-                            <field name="tax_item_ids" readonly="run_state in ['approved', 'paid', 'cancelled']">
+                            <field name="tax_item_ids" readonly="1">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="company_id" column_invisible="True"/>

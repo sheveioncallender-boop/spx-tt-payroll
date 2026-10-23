@@ -1187,13 +1187,13 @@ class TTPayrollRunEmployee(models.Model):
 
     @api.model
     def _attendance_overlap_hours(self, attendances, leave_start, leave_end):
-        """Return raw overlap between completed attendance and a Time Off interval."""
+        """Use native worked time so unpaid meal breaks are not leave overlap."""
         overlap = 0.0
         for attendance in attendances.filtered("check_out"):
             attendance_start = max(attendance.check_in, leave_start)
             attendance_end = min(attendance.check_out, leave_end)
             if attendance_end > attendance_start:
-                overlap += (attendance_end - attendance_start).total_seconds() / 3600.0
+                overlap += attendance._get_worked_hours_in_range(attendance_start, attendance_end)
         return overlap
 
     def _collect_time_off_snapshot(
@@ -1302,6 +1302,67 @@ class TTPayrollRunEmployee(models.Model):
             )
         return totals
 
+    def _attendance_payroll_hours(self, completed, start, end, time_off):
+        """Allocate each native clocking once, including payroll boundaries.
+
+        Odoo can classify time on an approved leave day as overtime. Remove
+        overlapping leave time from that overtime first; unpaid overlap must
+        then be withheld only once. The overlap remains a blocking review item.
+        Never use one clocking's overtime to reduce another clocking's wages.
+        """
+        actual = regular = approved = pending = 0.0
+        approved_leaves = [row for row in time_off["snapshot_values"]
+                           if row["approval_state"] == "approved"]
+        for attendance in completed:
+            worked = max(0.0, attendance._get_worked_hours_in_range(start, end))
+            total = attendance._get_worked_hours_in_range(attendance.check_in, attendance.check_out)
+            share = min(1.0, worked / total) if total > 0 else 0.0
+            raw = min(worked, max(0.0, attendance.overtime_hours) * share)
+            accepted = min(raw, max(0.0, attendance.validated_overtime_hours) * share)
+            awaiting = min(max(0.0, raw - accepted), sum(
+                max(0.0, overtime.manual_duration)
+                for overtime in attendance.linked_overtime_ids
+                if overtime.status == "to_approve"
+            ) * share)
+            overlap = unpaid_overlap = 0.0
+            for leave in approved_leaves:
+                hours = self._attendance_overlap_hours(
+                    attendance, leave["date_from"], leave["date_to"]
+                )
+                overlap += hours
+                if leave["payroll_treatment"] == "unpaid":
+                    unpaid_overlap += hours
+            overlap = min(worked, overlap)
+            unpaid_overlap = min(worked, unpaid_overlap)
+            remaining_overtime = max(0.0, raw - overlap)
+            overtime_share = remaining_overtime / raw if raw else 0.0
+            actual += worked
+            regular += max(0.0, worked - unpaid_overlap - remaining_overtime)
+            approved += accepted * overtime_share
+            pending += awaiting * overtime_share
+        return actual, regular, approved, pending
+
+    def _attendance_summary(self, missing):
+        self.ensure_one()
+        issues = []
+        if not self.employee_id.resource_calendar_id:
+            issues.append(_("No employee work schedule is assigned."))
+        if self.incomplete_attendance_count:
+            issues.append(_("%s attendance record(s) have no check-out.") % self.incomplete_attendance_count)
+        if self.pending_overtime_hours > 0:
+            issues.append(_("%.2f overtime hour(s) are awaiting approval.") % self.pending_overtime_hours)
+        if self.pending_time_off_count:
+            issues.append(_("%s Odoo Time Off request(s) are awaiting approval.") % self.pending_time_off_count)
+        if self.time_off_attendance_overlap_hours > 0.005:
+            issues.append(_("%.2f attendance hour(s) overlap approved Time Off. Resolve the conflict in Odoo before payroll review.") % self.time_off_attendance_overlap_hours)
+        if (self.scheduled_hours > 0 and not self.attendance_record_count
+                and not self.paid_leave_hours and not self.unpaid_leave_hours
+                and not self.public_holiday_hours):
+            issues.append(_("No attendance was found for this scheduled period."))
+        if missing > 0:
+            issues.append(_("%.2f expected hour(s) are currently missing.") % missing)
+        return "\n".join("• %s" % issue for issue in issues)
+
     def _recalculate_payable_hours(self):
         for line in self:
             candidate = (
@@ -1332,6 +1393,7 @@ class TTPayrollRunEmployee(models.Model):
                     "missing_hours": missing,
                     "unpaid_hours": unpaid,
                     "effective_hourly_rate": effective_rate,
+                    "attendance_issue_summary": line._attendance_summary(missing),
                 }
             )
 
@@ -1361,29 +1423,6 @@ class TTPayrollRunEmployee(models.Model):
                 order="check_in",
             )
             completed = attendances.filtered("check_out")
-            actual_worked = sum(
-                attendance._get_worked_hours_in_range(start_naive, end_naive)
-                for attendance in completed
-            )
-            raw_overtime = sum(max(0.0, attendance.overtime_hours) for attendance in completed)
-            approved_overtime = sum(max(0.0, attendance.validated_overtime_hours) for attendance in completed)
-            raw_overtime = min(actual_worked, raw_overtime)
-            approved_overtime = min(raw_overtime, approved_overtime)
-            cross_boundary = completed.filtered(
-                lambda attendance: attendance.check_in < start_naive or attendance.check_out > end_naive
-            )
-            if cross_boundary:
-                # Split by Odoo's own worked-hours calculation, including its breaks.
-                raw_overtime = approved_overtime = 0.0
-                for attendance in completed:
-                    total = attendance._get_worked_hours_in_range(attendance.check_in, attendance.check_out)
-                    inside = attendance._get_worked_hours_in_range(start_naive, end_naive)
-                    share = inside / total if total > 0 else 0.0
-                    raw_overtime += min(inside, max(0.0, attendance.overtime_hours) * share)
-                    approved_overtime += min(inside, max(0.0, attendance.validated_overtime_hours) * share)
-                approved_overtime = min(raw_overtime, approved_overtime)
-            pending_overtime = max(0.0, raw_overtime - approved_overtime)
-            regular_hours = max(0.0, actual_worked - raw_overtime)
             time_off = line._collect_time_off_snapshot(
                 start_naive,
                 end_naive,
@@ -1393,59 +1432,14 @@ class TTPayrollRunEmployee(models.Model):
             )
             paid_leave = time_off["paid"]
             unpaid_leave = time_off["unpaid"]
-            regular_hours = max(0.0, regular_hours - time_off["unpaid_overlap"])
+            actual_worked, regular_hours, approved_overtime, pending_overtime = line._attendance_payroll_hours(
+                completed, start_naive, end_naive, time_off
+            )
             public_holiday = line._global_public_holiday_hours(
                 start_aware, end_aware
             )
 
-            attendance_issues = []
             incomplete_count = len(attendances - completed)
-            if not line.employee_id.resource_calendar_id:
-                attendance_issues.append(_("No employee work schedule is assigned."))
-            if incomplete_count:
-                attendance_issues.append(
-                    _("%s attendance record(s) have no check-out.") % incomplete_count
-                )
-            if pending_overtime > 0:
-                attendance_issues.append(
-                    _("%.2f overtime hour(s) are awaiting approval.") % pending_overtime
-                )
-            if time_off["pending_count"]:
-                attendance_issues.append(
-                    _("%s Odoo Time Off request(s) are awaiting approval.")
-                    % time_off["pending_count"]
-                )
-            if time_off["attendance_overlap"] > 0.005:
-                attendance_issues.append(
-                    _("%.2f attendance hour(s) overlap approved Time Off.")
-                    % time_off["attendance_overlap"]
-                )
-            if (
-                scheduled_hours > 0
-                and not attendances
-                and paid_leave <= 0
-                and unpaid_leave <= 0
-                and public_holiday <= 0
-            ):
-                attendance_issues.append(_("No attendance was found for this scheduled period."))
-            preliminary_payable = max(
-                0.0,
-                regular_hours
-                + paid_leave
-                + public_holiday
-                + line.attendance_adjustment_hours,
-            )
-            if line.pay_basis == "salary" and scheduled_hours > 0:
-                preliminary_payable = min(scheduled_hours, preliminary_payable)
-            preliminary_missing = max(
-                0.0, scheduled_hours - preliminary_payable - unpaid_leave
-            )
-            if preliminary_missing > 0:
-                attendance_issues.append(
-                    _("%.2f expected hour(s) are currently missing.")
-                    % preliminary_missing
-                )
-
             values = {
                 "scheduled_days": scheduled_days,
                 "scheduled_hours": scheduled_hours,
@@ -1464,10 +1458,6 @@ class TTPayrollRunEmployee(models.Model):
                 "time_off_attendance_overlap_hours": time_off["attendance_overlap"],
                 "attendance_loaded_at": fields.Datetime.now(),
                 "attendance_confirmed": False,
-                "attendance_status": "needs_attention" if attendance_issues else "ready",
-                "attendance_issue_summary": "\n".join(
-                    "• %s" % issue for issue in attendance_issues
-                ),
             }
             line.time_off_snapshot_ids.sudo().with_context(tt_payroll_internal_write=INTERNAL).unlink()
             if time_off["snapshot_values"]:
@@ -1476,6 +1466,9 @@ class TTPayrollRunEmployee(models.Model):
                 )
             super(TTPayrollRunEmployee, line.with_context(tt_payroll_internal_write=INTERNAL)).write(values)
             line._recalculate_payable_hours()
+            super(TTPayrollRunEmployee, line.with_context(tt_payroll_internal_write=INTERNAL)).write({
+                "attendance_status": "needs_attention" if line.attendance_issue_summary else "ready",
+            })
         return True
 
     def _primary_earning_amount(self):
@@ -2067,7 +2060,19 @@ class TTPayrollRunEmployee(models.Model):
 
     def action_open_attendances(self):
         self.ensure_one()
-        return self.employee_id.action_tt_open_attendances()
+        action = self.employee_id.action_tt_open_attendances()
+        start, end = self._period_bounds()[3:]
+        action["domain"] += [("check_in", "<", end), "|",
+                             ("check_out", "=", False), ("check_out", ">", start)]
+        # Keep Odoo's attendance views; open the payroll period as a useful list
+        # instead of Enterprise's default Gantt positioned on today's date.
+        views = action.get("views", [])
+        action["views"] = sorted(views, key=lambda view: view[1] != "list")
+        if not any(view[1] == "list" for view in views):
+            action["views"].insert(0, (False, "list"))
+        action["view_mode"] = ",".join(view[1] for view in action["views"])
+        action["context"]["initial_date"] = fields.Date.to_string(self.run_id.date_start)
+        return action
 
     def write(self, vals):
         editable_fields = set(vals) - {"message_follower_ids", "message_ids", "activity_ids"}

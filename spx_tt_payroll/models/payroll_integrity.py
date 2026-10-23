@@ -229,7 +229,7 @@ class PayrollEmployeeIntegrity(models.Model):
                 raise UserError(_("Use Mark Reviewed after checking the calculation."))
         if not internal(self) and not workflow(self):
             protected = {"run_id", "employee_id", "company_id", "currency_id", "salary_amount", "period_salary",
-                "hourly_rate", "pay_basis", "payable_hours", "regular_hours", "scheduled_hours", "overtime_hours",
+                "hourly_rate", "pay_basis", "pay_frequency_id", "payable_hours", "regular_hours", "scheduled_hours", "overtime_hours",
                 "paid_leave_hours", "unpaid_leave_hours", "public_holiday_hours", "attendance_confirmed",
                 "attendance_status", "attendance_record_count", "incomplete_attendance_count", "actual_worked_hours",
                 "pending_overtime_hours", "pending_time_off_count", "time_off_attendance_overlap_hours",
