@@ -189,6 +189,64 @@ class TestCalculationFixes(TransactionCase):
             self.assertIn('charset="utf-8"', str(body).lower())
             self.assertIn("QA — José", str(body))
 
+    def test_hourly_weekly_native_clockings_match_calculator(self):
+        self._january_clockings()
+        weekly = self.env.ref("spx_tt_payroll.pay_frequency_weekly")
+        self.employee.write({"tt_pay_type": "hourly", "tt_hourly_rate": 50,
+                             "tt_pay_frequency_id": weekly.id})
+        self.env["hr.attendance"].create([
+            {"employee_id": self.employee.id, "check_in": f"2026-01-0{day} 08:00:00",
+             "check_out": f"2026-01-0{day} 17:00:00"} for day in (7, 8, 9)
+        ])
+        run = self.env["spx.tt.payroll.run"].create({
+            "company_id": self.env.company.id, "pay_frequency_id": weekly.id,
+            "date_start": "2026-01-05", "date_end": "2026-01-11", "payment_date": "2026-01-11",
+        })
+        line = run.employee_line_ids.filtered(lambda row: row.employee_id == self.employee)
+        self.assertEqual(len(line), 1)
+        self.assertAlmostEqual(line.payable_hours, 40)
+        self.assertAlmostEqual(line.gross_pay, 2000)
+        self.assertAlmostEqual(line.employee_nis_amount, 109.40, places=2)
+        self.assertAlmostEqual(line.employer_nis_amount, 218.80, places=2)
+        self.assertAlmostEqual(line.health_surcharge_amount, 8.25, places=2)
+        self.assertAlmostEqual(line.paye_amount, 48.16, places=2)
+        self.assertAlmostEqual(line.net_pay, 1834.19, places=2)
+
+    def test_recurring_items_refresh_without_duplication(self):
+        recurring = self.env["spx.tt.employee.pay.item"].create([
+            {"employee_id": self.employee.id,
+             "pay_item_id": self.env.ref("spx_tt_payroll.pay_item_phone_allowance").id,
+             "amount": 250},
+            {"employee_id": self.employee.id,
+             "pay_item_id": self.env.ref("spx_tt_payroll.pay_item_other_deduction").id,
+             "amount": 100},
+        ])
+        _, line = self.full_pay()
+        self.assertAlmostEqual(line.gross_pay, 9750)
+        self.assertAlmostEqual(line.net_pay, 8659.02, places=2)
+        line.action_refresh_from_employee()
+        self.assertEqual(len(line.item_line_ids.filtered(lambda item: item.source == "recurring")), 2)
+        self.assertAlmostEqual(line.gross_pay, 9750)
+        recurring[0].active = False
+        line.action_refresh_from_employee()
+        self.assertAlmostEqual(line.gross_pay, 9500)
+        self.assertEqual(len(line.item_line_ids.filtered(lambda item: item.source == "recurring")), 1)
+
+    def test_payroll_company_isolation(self):
+        other_company = self.env["res.company"].create({"name": "QA separate payroll company"})
+        other_run = self.env["spx.tt.payroll.run"].with_company(other_company).with_context(
+            skip_tt_payroll_auto_load=True).create({
+                "company_id": other_company.id, "pay_frequency_id": self.monthly.id,
+                "date_start": "2026-01-01", "date_end": "2026-01-31", "payment_date": "2026-01-31",
+            })
+        officer = new_test_user(self.env, login="tt_company_isolation_ci",
+            groups="spx_tt_payroll.group_tt_payroll_officer",
+            company_id=self.env.company.id, company_ids=[(6, 0, self.env.company.ids)])
+        Run = self.env["spx.tt.payroll.run"].with_user(officer).with_context(allowed_company_ids=self.env.company.ids)
+        self.assertFalse(Run.search([("id", "=", other_run.id)]))
+        with self.assertRaises(AccessError):
+            Run.browse(other_run.id).read(["net_pay"])
+
     def test_first_pay_and_live_addition_recalculation(self):
         _, line = self.full_pay()
         self.assertAlmostEqual(line.paye_amount, 407.48, places=2)

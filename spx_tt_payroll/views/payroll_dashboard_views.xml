@@ -38,7 +38,7 @@
                             <span><field name="run_frequency" nolabel="1" readonly="1"/> | <field name="run_period" nolabel="1" readonly="1"/></span>
                         </div>
                         <div class="o_tt_control_progress">
-                            <span>Overall completion</span>
+                            <span>Payroll preparation</span>
                             <field name="overall_progress" widget="progressbar" nolabel="1" readonly="1"/>
                         </div>
                         <button name="action_open_current_run" type="object" string="Continue Payroll" class="btn-primary" icon="fa-arrow-right"/>
@@ -66,7 +66,7 @@
                                            decoration-warning="run_state in ('attendance_review', 'under_review')"
                                            decoration-primary="run_state == 'calculated'"
                                            decoration-success="run_state in ('approved', 'paid')"/>
-                                    <strong><field name="payroll_employee_count" nolabel="1" readonly="1"/> employees</strong>
+                                    <strong><field name="payroll_payable_count" nolabel="1" readonly="1"/> payable employees</strong>
                                 </div>
                                 <div class="o_tt_progress_stack" invisible="not has_current_run">
                                     <div>
@@ -193,8 +193,8 @@
                             <div class="o_tt_card_header">
                                 <div class="o_tt_card_icon"><i class="fa fa-university"/></div>
                                 <div>
-                                    <h3>Statutory Deductions</h3>
-                                    <span>Current payroll statutory amounts</span>
+                                    <h3>PAYE, NIS &amp; Health Surcharge</h3>
+                                    <span>Employee deductions plus Employer NIS</span>
                                 </div>
                             </div>
                             <div class="o_tt_card_metric o_tt_money"><field name="total_statutory_liability" widget="monetary" nolabel="1" readonly="1" options="{'currency_field': 'currency_id'}"/></div>
@@ -237,10 +237,10 @@
                                 <div class="o_tt_card_icon"><i class="fa fa-bank"/></div>
                                 <div>
                                     <h3>Payments</h3>
-                                    <span>How employees will be paid</span>
+                                    <span>Total net pay across all payment methods</span>
                                 </div>
                             </div>
-                            <div class="o_tt_card_metric o_tt_money"><field name="bank_transfer_total" widget="monetary" nolabel="1" readonly="1" options="{'currency_field': 'currency_id'}"/></div>
+                            <div class="o_tt_card_metric o_tt_money"><field name="net_pay" widget="monetary" nolabel="1" readonly="1" options="{'currency_field': 'currency_id'}"/></div>
                             <div class="o_tt_card_stats">
                                 <span><strong><field name="bank_employee_count" nolabel="1" readonly="1"/></strong> bank transfers</span>
                                 <span><strong><field name="cash_employee_count" nolabel="1" readonly="1"/></strong> cash</span>
