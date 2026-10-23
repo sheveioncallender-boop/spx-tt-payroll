@@ -23,6 +23,7 @@ Developed by Spxcorp Limited. Based on v1.8.5, with Phase 6 kept on a separate b
 - Payroll changes have immutable history. Completed runs cannot be reset or cancelled; the manager reopening and adjustment-payroll features remain Phase 6/future work.
 - Statutory YTD excludes held/excluded historical lines. Completed payslip summaries and identifying labels are frozen.
 - Odoo 19 constraint declarations replace the unsupported legacy declarations. Upgrade checks stop on duplicates rather than deleting or silently merging them.
+- Employee setup-status and pay-basis filters accept Odoo 19's normalized search values. Dedicated payroll views are restricted to payroll users; standard HR users keep the native employee form.
 
 ## Calculator comparison
 
@@ -56,7 +57,7 @@ Official references checked:
 
 Local verification: Python compilation, manifest file checks, XML and Odoo 19 XML/list schemas, actual source method arithmetic with ORM boundary doubles, source wiring/guard checks, and 12 independent projection tests. The full case results are in checks/results.json. The doubles do not execute database constraints, access rules, field recomputation, transactions or rendered screens.
 
-The new Odoo TransactionCase scenarios cover native clockings, checkout correction/refresh, payroll-only adjustment, live deduction recalculation, TD1 validity, existing employee loading, locked history and short-pay review. Those require a real Odoo database. GitHub Actions is configured to install/test the addon on Odoo 19 Community; consult the specific commit's Actions result. Enterprise testing will be performed on the user's Cloudpepper test instance. Enterprise source is not included or required in this addon.
+The Odoo TransactionCase scenarios cover native clockings, checkout correction/refresh, native paid/unpaid Time Off approval, payroll-only adjustment, live deduction recalculation, TD1 validity, existing employee loading, payroll officer access, native HR access, locked history, payslip template rendering and short-pay review. GitHub Actions installs/tests the addon on a real Odoo 19 Community database and upgrades a v1.8.5 database containing a paid payroll, verifying its original item amounts and saved payslip summary. Consult the specific commit's Actions result. Enterprise testing will be performed on the user's Cloudpepper test instance. Enterprise source is not included or required in this addon.
 
 Do not treat this build as a production sign-off. On Enterprise verify fresh install/upgrade, each payroll role, company isolation, native attendance and leave integration, payslip PDF layout, concurrent changes and the complete calculate/review/approve/paid flow.
 

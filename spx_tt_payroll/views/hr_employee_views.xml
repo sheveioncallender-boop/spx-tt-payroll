@@ -19,6 +19,7 @@
     <record id="view_tt_payroll_employee_form" model="ir.ui.view">
         <field name="name">hr.employee.form.trinidad.payroll.workspace.safe</field>
         <field name="model">hr.employee</field>
+        <field name="group_ids" eval="[(4, ref('spx_tt_payroll.group_tt_payroll_user'))]"/>
         <field name="arch" type="xml">
             <form string="TT Payroll Employee" class="o_tt_payroll_employee_form">
                 <header>
@@ -310,6 +311,7 @@
     <record id="view_tt_payroll_employee_list" model="ir.ui.view">
         <field name="name">hr.employee.list.trinidad.payroll.workspace.safe</field>
         <field name="model">hr.employee</field>
+        <field name="group_ids" eval="[(4, ref('spx_tt_payroll.group_tt_payroll_user'))]"/>
         <field name="arch" type="xml">
             <list string="TT Payroll Employees">
                 <field name="image_128" string="Photo" widget="image" options="{'size': [32, 32]}" optional="show"/>
@@ -343,6 +345,7 @@
     <record id="view_tt_payroll_employee_search" model="ir.ui.view">
         <field name="name">hr.employee.search.trinidad.payroll.workspace.safe</field>
         <field name="model">hr.employee</field>
+        <field name="group_ids" eval="[(4, ref('spx_tt_payroll.group_tt_payroll_user'))]"/>
         <field name="arch" type="xml">
             <search>
                 <field name="name" string="Employee"/>

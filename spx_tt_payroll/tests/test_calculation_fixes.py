@@ -1,7 +1,7 @@
 """Run on an Odoo 19 test database; all records are transaction-isolated."""
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase, new_test_user
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 
 @tagged("post_install", "-at_install")
@@ -198,6 +198,16 @@ class TestCalculationFixes(TransactionCase):
         self.assertTrue(run.change_ids)
         with self.assertRaises(UserError):
             run.change_ids[:1].write({"description": "Changed history"})
+
+    def test_native_hr_view_without_payroll_access(self):
+        hr_user = new_test_user(self.env, login="tt_native_hr_ci", groups="hr.group_hr_user",
+            company_id=self.env.company.id, company_ids=[(6, 0, self.env.company.ids)])
+        view = self.env["hr.employee"].with_user(hr_user).get_view(
+            view_id=self.env.ref("hr.view_employee_form").id, view_type="form")
+        self.assertIn("employee", view["arch"].lower())
+        self.assertFalse(hr_user.has_group("spx_tt_payroll.group_tt_payroll_user"))
+        with self.assertRaises(AccessError):
+            self.employee.with_user(hr_user).read(["tt_monthly_salary"])
 
     def test_audited_short_hours_can_be_reviewed(self):
         run, line = self.new_run()
