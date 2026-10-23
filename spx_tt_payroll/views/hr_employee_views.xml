@@ -117,7 +117,7 @@
                         </div>
                     </div>
 
-                    <notebook invisible="tt_payroll_status == 'excluded'">
+                    <notebook groups="spx_tt_payroll.group_tt_payroll_user" invisible="tt_payroll_status == 'excluded'">
                         <page string="Overview" name="tt_overview">
                             <group>
                                 <group string="Organization">
@@ -247,7 +247,7 @@
                                     <field name="tt_payment_method"/>
                                     <field name="tt_payment_currency_id" readonly="1"/>
                                 </group>
-                                <group string="Bank Transfer Details" invisible="tt_payment_method != 'bank'">
+                                <group string="Bank Transfer Details" groups="spx_tt_payroll.group_tt_payroll_user" invisible="tt_payment_method != 'bank'">
                                     <field name="tt_bank_name"/>
                                     <field name="tt_bank_branch"/>
                                     <field name="tt_bank_account_name"/>
