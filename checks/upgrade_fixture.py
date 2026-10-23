@@ -12,11 +12,11 @@ if os.environ["TT_UPGRADE_STAGE"] == "before":
         "tt_pay_frequency_id": env.ref("spx_tt_payroll.pay_frequency_monthly").id,
         "tt_payment_method": "cash", "tt_bir_number": "CI-BIR", "tt_nis_number": "CI-NIS",
     })
-    run = env["spx.tt.payroll.run"].create({
+    run = env["spx.tt.payroll.run"].with_context(skip_tt_payroll_auto_load=True).create({
         "company_id": env.company.id, "pay_frequency_id": employee.tt_pay_frequency_id.id,
         "date_start": "2026-01-01", "date_end": "2026-01-31", "payment_date": "2026-01-31",
     })
-    line = run.employee_line_ids.filtered(lambda item: item.employee_id == employee)
+    line = env["spx.tt.payroll.run.employee"].create({"run_id": run.id, "employee_id": employee.id})
     env["spx.tt.payroll.hours.adjustment.wizard"].create({
         "run_employee_id": line.id, "adjustment_hours": 160,
         "reason": "Migration test reconciliation",
