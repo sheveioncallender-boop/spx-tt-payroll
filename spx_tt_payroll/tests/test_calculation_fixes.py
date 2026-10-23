@@ -62,6 +62,48 @@ class TestCalculationFixes(TransactionCase):
         self.assertGreater(line.actual_worked_hours, 0)
         self.assertFalse(line.attendance_confirmed)
 
+    def test_native_time_off_approval_and_refresh(self):
+        leave_type = self.env["hr.leave.type"].create({
+            "name": "TT paid leave test", "requires_allocation": False,
+            "leave_validation_type": "hr",
+        })
+        leave = self.env["hr.leave"].create({
+            "name": "Native approval test", "employee_id": self.employee.id,
+            "holiday_status_id": leave_type.id,
+            "request_date_from": "2026-01-06", "request_date_to": "2026-01-06",
+        })
+        _, line = self.new_run()
+        self.assertEqual(line.pending_time_off_count, 1)
+        self.assertEqual(line.paid_leave_hours, 0)
+        self.assertEqual(line.gross_pay, 0)
+        leave.action_approve()
+        self.assertEqual(leave.state, "validate")
+        native_values = leave.read(["state", "date_from", "date_to", "number_of_hours"])
+        line.action_refresh_attendance()
+        self.assertEqual(line.pending_time_off_count, 0)
+        self.assertGreater(line.paid_leave_hours, 0)
+        self.assertAlmostEqual(line.paid_leave_hours, leave.number_of_hours)
+        self.assertAlmostEqual(line.gross_pay, round(9500 * leave.number_of_hours / 160, 2), places=2)
+        self.assertEqual(leave.read(["state", "date_from", "date_to", "number_of_hours"]), native_values)
+
+    def test_native_unpaid_time_off_is_not_paid(self):
+        leave_type = self.env["hr.leave.type"].create({
+            "name": "TT unpaid leave test", "requires_allocation": False,
+            "leave_validation_type": "hr", "unpaid": True,
+        })
+        leave = self.env["hr.leave"].create({
+            "name": "Unpaid approval test", "employee_id": self.employee.id,
+            "holiday_status_id": leave_type.id,
+            "request_date_from": "2026-01-06", "request_date_to": "2026-01-06",
+        })
+        leave.action_approve()
+        _, line = self.new_run()
+        self.assertGreater(line.unpaid_leave_hours, 0)
+        self.assertAlmostEqual(line.unpaid_leave_hours, leave.number_of_hours)
+        self.assertEqual(line.paid_leave_hours, 0)
+        self.assertEqual(line.gross_pay, 0)
+        self.assertEqual(line.time_off_snapshot_ids.payroll_treatment, "unpaid")
+
     def test_first_pay_and_live_addition_recalculation(self):
         _, line = self.full_pay()
         self.assertAlmostEqual(line.paye_amount, 407.48, places=2)

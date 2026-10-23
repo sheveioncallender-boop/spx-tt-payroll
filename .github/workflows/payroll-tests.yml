@@ -16,14 +16,17 @@ jobs:
           POSTGRES_PASSWORD: odoo
           POSTGRES_DB: postgres
         ports: ['5432:5432']
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd "pg_isready -U odoo" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v4
+      - name: Test annual tax projection
+        run: python3 -m unittest discover -s checks -p 'test_projection.py' -v
       - name: Install and test on Odoo 19 Community
         run: |
           set -o pipefail
           mkdir -p test-results
           docker run --rm --network host \
+            -e HOST=127.0.0.1 -e PORT=5432 -e USER=odoo -e PASSWORD=odoo \
             -v "$PWD:/mnt/extra-addons:ro" \
             odoo:19.0 odoo -d tt_payroll_test \
             --db_host=127.0.0.1 --db_port=5432 --db_user=odoo --db_password=odoo \
