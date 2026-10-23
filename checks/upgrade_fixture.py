@@ -4,7 +4,8 @@ import os
 
 key = "spx_tt_payroll.ci_upgrade_fixture"
 if os.environ["TT_UPGRADE_STAGE"] == "before":
-    env.ref("base.user_admin").group_ids |= env.ref("spx_tt_payroll.group_tt_payroll_manager")
+    manager = env.ref("base.user_admin")
+    manager.group_ids |= env.ref("spx_tt_payroll.group_tt_payroll_manager")
     employee = env["hr.employee"].create({
         "name": "Upgrade preserved employee", "company_id": env.company.id,
         "tt_payroll_status": "active", "tt_pay_type": "monthly", "tt_monthly_salary": 9500,
@@ -23,8 +24,8 @@ if os.environ["TT_UPGRADE_STAGE"] == "before":
     line.action_confirm_attendance()
     run.action_calculate()
     line.action_mark_reviewed()
-    run.action_approve()
-    run.action_mark_paid()
+    run.with_user(manager).action_approve()
+    run.with_user(manager).action_mark_paid()
     values = {"run": run.id, "line": line.id, "gross": line.gross_pay,
               "net": line.net_pay, "deductions": line.total_deductions,
               "summary": line._payslip_summary_values(),

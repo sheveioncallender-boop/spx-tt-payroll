@@ -1,7 +1,7 @@
 """Run on an Odoo 19 test database; all records are transaction-isolated."""
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase, new_test_user
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import UserError
 
 
 @tagged("post_install", "-at_install")
@@ -136,6 +136,10 @@ class TestCalculationFixes(TransactionCase):
         self.employee.name = "Changed after approval"
         self.assertEqual(line._payslip_summary_values(), saved)
         self.assertEqual(line._payslip_identity()["employee"], "TT Native Attendance Test")
+        html, _ = self.env["ir.actions.report"]._render_qweb_html(
+            "spx_tt_payroll.action_report_tt_payroll_payslip_pdf", line.ids)
+        self.assertIn(b"TT Native Attendance Test", html)
+        self.assertNotIn(b"Changed after approval", html)
         with self.assertRaises(UserError):
             line.with_context(tt_payroll_allow_locked_write=True).write({"salary_amount": 1})
         with self.assertRaises(UserError):
@@ -158,7 +162,11 @@ class TestCalculationFixes(TransactionCase):
 
     def test_forged_creation_defaults_do_not_become_pay(self):
         run, line = self.new_run()
-        other = self.employee.copy({"name": "Default injection test"})
+        other = self.env["hr.employee"].create({
+            "name": "Default injection test", "company_id": self.env.company.id,
+            "tt_payroll_status": "active", "tt_pay_type": "monthly",
+            "tt_monthly_salary": 9500, "tt_pay_frequency_id": self.monthly.id,
+        })
         created = self.env["spx.tt.payroll.run.employee"].with_context(
             default_run_id=run.id, default_employee_id=other.id,
             default_payable_hours=999, default_salary_amount=999999,
@@ -188,7 +196,7 @@ class TestCalculationFixes(TransactionCase):
         with self.assertRaises(UserError):
             run.action_approve()
         self.assertTrue(run.change_ids)
-        with self.assertRaises((AccessError, UserError)):
+        with self.assertRaises(UserError):
             run.change_ids[:1].write({"description": "Changed history"})
 
     def test_audited_short_hours_can_be_reviewed(self):
