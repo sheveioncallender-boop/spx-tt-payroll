@@ -41,7 +41,11 @@ else:
     assert line.gross_pay == values["gross"]
     assert line.net_pay == values["net"]
     assert line.total_deductions == values["deductions"]
-    assert [[item.id, item.amount] for item in line.item_line_ids] == values["items"]
+    # Reloading an Odoo one2many applies its sequence order; compare each
+    # original item's identity and amount independently of that display order.
+    current_items = {item.id: item.amount for item in line.item_line_ids}
+    expected_items = dict(values["items"])
+    assert current_items == expected_items, (current_items, expected_items)
     assert line.locked_summary and line.locked_identity
     assert line._payslip_summary_values() == values["summary"]
     line.employee_id.name = "Renamed after upgrade"
