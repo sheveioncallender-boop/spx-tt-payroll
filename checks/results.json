@@ -3099,7 +3099,7 @@
     "models/res_config_settings.py": "03ead0f47a6e4fad41754bd15e93223347b259df18b2b7e31aeeae7cefc5e1d8",
     "models/time_off_snapshot.py": "e4aabe5c084caf24af9770fa771c69874913d83f975e09b61242e2caf1294e03",
     "tests/__init__.py": "31462c3cdc28b43a386c27de3333fda44cb7bcf630a3deba9797f40ae020aebe",
-    "tests/test_calculation_fixes.py": "c9751d1191fedb99c5efe13d3e664bc05b43aaee1660a6be75bce8e46eced4ef",
+    "tests/test_calculation_fixes.py": "be37e5bf6fdd684eface8455f0b777497765b16b3a40c0025069ebd0d2e0362a",
     "tests/test_payroll_foundation.py": "3ec414101b2fde420b36d4b44b06b7093f70046e70c7f9131cad471587fc6375",
     "tests/test_payroll_run.py": "2c3f0b378d82a82e27ac5555b7d896f4a1babdfabdf9733d2eaedf7324da7291",
     "wizard/__init__.py": "d9d0f3881cb61be63331c4f46f0710cb50e07aef7f6b27e922964aadcf95f8a2",
