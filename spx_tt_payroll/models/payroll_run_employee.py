@@ -1811,9 +1811,18 @@ class TTPayrollRunEmployee(models.Model):
                         "Enter an Attendance Review Note before confirming unresolved attendance exceptions. Manual adjustments made through Adjust Payable Hours already have their own reason history."
                     )
                 )
-            line.with_context(tt_payroll_internal_write=INTERNAL).write(
-                {"attendance_confirmed": True, "attendance_status": "ready"}
+            # A review note acknowledges a shortage; it does not resolve a
+            # missing check-out, pending approval, or conflicting source record.
+            source_issue = bool(
+                line.incomplete_attendance_count
+                or line.pending_overtime_hours
+                or line.pending_time_off_count
+                or line.time_off_attendance_overlap_hours
             )
+            line.with_context(tt_payroll_internal_write=INTERNAL).write({
+                "attendance_confirmed": True,
+                "attendance_status": "needs_attention" if source_issue else "ready",
+            })
         return True
 
     def action_refresh_from_employee(self):

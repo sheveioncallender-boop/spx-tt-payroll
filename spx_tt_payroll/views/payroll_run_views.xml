@@ -583,15 +583,17 @@
                                     <field name="time_off_attendance_overlap_hours" readonly="1"/>
                                     <field name="public_holiday_hours" readonly="1"/>
                                     <field name="attendance_adjustment_hours" string="Approved Hours Adjustment" readonly="1"/>
-                                    <button name="action_open_hours_adjustment_wizard" type="object" string="Adjust Payable Hours" class="btn-primary"
+                                    <div colspan="2">
+                                        <button name="action_open_hours_adjustment_wizard" type="object" string="Adjust Payable Hours" class="btn-primary"
                                             invisible="run_state in ['approved', 'paid', 'cancelled']"
                                             groups="spx_tt_payroll.group_tt_payroll_officer"/>
+                                    </div>
                                     <field name="payable_hours" readonly="1"/>
                                     <field name="missing_hours" readonly="1"/>
                                     <field name="unpaid_hours" readonly="1" invisible="not unpaid_hours"/>
                                 </group>
                                 <group string="Review">
-                                    <field name="attendance_issue_summary" nolabel="1" readonly="1"/>
+                                    <field name="attendance_issue_summary" nolabel="1" colspan="2" readonly="1"/>
                                     <field name="attendance_review_note" placeholder="Explain any clocking correction, paid leave decision, or accepted unpaid time..."/>
                                 </group>
                             </group>
@@ -634,7 +636,7 @@
                             <group>
                                 <group string="Items Requiring Attention">
                                     <field name="issue_count" readonly="1"/>
-                                    <field name="issue_summary" nolabel="1" readonly="1"/>
+                                    <field name="issue_summary" nolabel="1" colspan="2" readonly="1"/>
                                 </group>
                                 <group string="Hold or Exclusion">
                                     <field name="hold_reason"/>

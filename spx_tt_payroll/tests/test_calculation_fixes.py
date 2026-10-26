@@ -133,8 +133,26 @@ class TestCalculationFixes(TransactionCase):
         self.assertAlmostEqual(line.gross_pay, 475)
         self.assertAlmostEqual(line.time_off_attendance_overlap_hours, 8)
         self.assertEqual(clockings.read(["check_in", "check_out", "worked_hours", "overtime_hours"]), before)
+        line.attendance_review_note = "Acknowledged conflict; source still requires correction"
+        line.action_confirm_attendance()
+        self.assertTrue(line.attendance_confirmed)
+        self.assertEqual(line.attendance_status, "needs_attention")
         with self.assertRaises(UserError):
             line.action_mark_reviewed()
+
+    def test_accepted_shortage_can_still_be_confirmed_and_reviewed(self):
+        _, line = self.new_run()
+        self.env["spx.tt.payroll.hours.adjustment.wizard"].create({
+            "run_employee_id": line.id, "adjustment_hours": 140,
+            "reason": "Test reconciled payable hours",
+        }).action_apply_adjustment()
+        line.attendance_review_note = "Test accepted twenty hours of unpaid absence"
+        line.action_confirm_attendance()
+        self.assertTrue(line.attendance_confirmed)
+        self.assertEqual(line.attendance_status, "ready")
+        self.assertAlmostEqual(line.gross_pay, 8312.50)
+        line.action_mark_reviewed()
+        self.assertEqual(line.review_state, "reviewed")
 
     def test_overtime_clipped_per_clocking_and_refused_is_not_pending(self):
         clockings = self._january_clockings()
