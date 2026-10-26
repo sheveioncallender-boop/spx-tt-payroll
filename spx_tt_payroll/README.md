@@ -7,7 +7,7 @@ Trinidad & Tobago Payroll provides a complete, easy-to-use attendance-first payr
 
 ## Current Version
 
-Version 19.0.1.8.4 updates the Odoo Apps listing, module summary, full feature description, and Spxcorp Limited branding. Payroll functionality remains the same as version 19.0.1.8.3.
+Version **19.0.1.8.8** preserves the attendance and calculation fixes from v1.8.7, keeps unresolved attendance issues visible after acknowledgement, and corrects the Attendance & Hours form alignment. Install branch: **main**. See [the maintenance update instructions](VALIDATION_1_8_8.md).
 
 ## Automatic statutory calculations
 
@@ -71,7 +71,7 @@ before-and-after audit history. Direct editing of approved adjustment hours is b
 
 ## Phase 7 — Premium Payslip (v1.7.0)
 
-- A4 landscape payslip based on the established Trinidad payroll structure.
+- US Letter portrait payslip based on the established Trinidad payroll structure.
 - Preserves Wages, Bank Transfers, Additions, Taxes, Deductions, Loans, and Current/YTD Summary.
 - Salaried employees do not expose internal hourly proration on the payslip.
 - Draft previews display a watermark; approved and paid payrolls print without it.

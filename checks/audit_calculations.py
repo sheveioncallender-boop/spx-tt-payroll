@@ -1,4 +1,4 @@
-"""Read-only v1.8.7 audit. Runs actual addon method bodies with ORM boundary doubles.
+"""Read-only v1.8.8 audit. Runs actual addon method bodies with ORM boundary doubles.
 
 Usage: python checks/audit_calculations.py /path/to/addon [--odoo-source /path/to/odoo19]
 This is NOT an Odoo installation, transaction, ACL, UI or PDF integration test.
@@ -146,7 +146,7 @@ def calculate(line):
 
 # Static package checks; do not confuse schema validity with successful installation.
 manifest = ast.literal_eval((ROOT/'__manifest__.py').read_text())
-check('Baseline version', '19.0.1.8.7', lambda:manifest['version'], 'package')
+check('Baseline version', '19.0.1.8.8', lambda:manifest['version'], 'package')
 check('Accounting and Enterprise payroll remain optional', ['hr','hr_attendance','hr_holidays','mail'], lambda:manifest['depends'], 'package')
 for f in sorted(ROOT.rglob('*.py')):
     check(f'Python syntax: {f.relative_to(ROOT)}', True, lambda f=f: bool(compile(f.read_text(),str(f),'exec')), 'package')
